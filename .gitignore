@@ -5,6 +5,14 @@
 *.suo
 *.user
 *.sln.docstates
+Library/
+Temp/
+*.obj
+*.sln
+*.csproj
+*.userprefs
+*.unityproj
+*.DS_Store 
 
 # Build results
 

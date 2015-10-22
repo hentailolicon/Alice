@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using Random = UnityEngine.Random;
-using Algo;
+using Alice;
 public class Map : MonoBehaviour
 {
     // 使用序列化以便在inspector面板写入成员变量

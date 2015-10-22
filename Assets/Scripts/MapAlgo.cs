@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Algo{
+namespace Alice
+{
     class MapAlgo
     {
         public const int MAZE_MAX = 50;

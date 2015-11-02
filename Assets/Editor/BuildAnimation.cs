@@ -23,16 +23,26 @@ public class BuildAnimation : Editor
 		DirectoryInfo raw = new DirectoryInfo (ImagePath);		
 		foreach (DirectoryInfo dictorys in raw.GetDirectories()) 
 		{
+            string parentName = System.IO.Directory.GetParent(dictorys.FullName).Name;
 			List<AnimationClip> clips = new List<AnimationClip>();
 			foreach (DirectoryInfo dictoryAnimations in dictorys.GetDirectories()) 
 			{
-				//每个文件夹就是一组帧动画，这里把每个文件夹下的所有图片生成出一个动画文件
-				clips.Add(BuildAnimationClip(dictoryAnimations));
+                if (!File.Exists(AnimationPath + "/" + parentName + "/" + dictorys.Name + ".anim"))
+                //每个文件夹就是一组帧动画，这里把每个文件夹下的所有图片生成出一个动画文件
+                {
+                    clips.Add(BuildAnimationClip(dictoryAnimations));
+                }
 			}
 			//把所有的动画文件生成在一个AnimationController里
-			UnityEditor.Animations.AnimatorController controller =	BuildAnimationController(clips,dictorys.Name);
-			//最后生成程序用的Prefab文件
-			BuildPrefab(dictorys,controller);
+            if (!File.Exists(AnimationControllerPath + "/" + dictorys.Name + ".controller"))
+            {
+                UnityEditor.Animations.AnimatorController controller = BuildAnimationController(clips, dictorys.Name);
+                //最后生成程序用的Prefab文件
+                if (!File.Exists(PrefabPath + "/" + dictorys.Name + ".prefab"))
+                {
+                    BuildPrefab(dictorys, controller);
+                }
+            }
 		}	
 	}
 	
@@ -70,7 +80,10 @@ public class BuildAnimation : Editor
 			serializedClip.ApplyModifiedProperties();
 		}
 		string parentName = System.IO.Directory.GetParent(dictorys.FullName).Name;
-		System.IO.Directory.CreateDirectory(AnimationPath +"/"+parentName);
+        if (!Directory.Exists(AnimationPath + "/" + parentName))
+        {
+            System.IO.Directory.CreateDirectory(AnimationPath + "/" + parentName);
+        }
 		AnimationUtility.SetObjectReferenceCurve(clip,curveBinding,keyFrames);
 		AssetDatabase.CreateAsset(clip,AnimationPath +"/"+parentName +"/" +animationName+".anim");
 		AssetDatabase.SaveAssets();

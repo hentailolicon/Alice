@@ -5,14 +5,16 @@ public class Player : MonoBehaviour
 {
 
     public Vector2 speed = new Vector2(3, 3);                        //玩家速度
+    public GameObject weaponImg;
 
     private Vector2 movement;                                        //玩家位移 = 玩家速度 * 方向
     private Animator anim;                                           //玩家动画控制器
     private CameraFollow camerafollow = new CameraFollow();
     private Transform camera;                                        //主视角transform
     private bool isCameraMove = false;                               //摄像机是否在移动
-    private Vector2 cameraMove = new Vector2(0, 0);                  //摄像机将要移动到的坐标
-
+    private Vector2 cameraMove = new Vector2(0, 28.8f);              //摄像机将要移动到的坐标
+    private float cooldown = 0;
+    private Weapon weapon = new Weapon();
     // Use this for initialization
     void Start()
     {
@@ -23,7 +25,10 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (cooldown > 0)
+        {
+            cooldown -= Time.deltaTime;
+        }
     }
     void FixedUpdate()
     {
@@ -33,8 +38,8 @@ public class Player : MonoBehaviour
         {
             GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);           //停止玩家移动
             //设置动画
-            anim.SetFloat("zySpeed", 0);
-            anim.SetFloat("sxSpeed", 0);
+            anim.SetFloat("horSpeed", 0);
+            anim.SetFloat("verSpeed", 0);
             //移动摄像机
             camerafollow.TrackPlayer(camera, cameraMove);
             //判断摄像机是否到达预定地点
@@ -45,10 +50,18 @@ public class Player : MonoBehaviour
         }
         else
         {
-            anim.SetFloat("zySpeed", Mathf.Abs(inputX));
-            anim.SetFloat("sxSpeed", Mathf.Abs(inputY));
+            anim.SetFloat("horSpeed", inputX);
+            anim.SetFloat("verSpeed", inputY);
             movement = new Vector2(speed.x * inputX, speed.y * inputY);
             GetComponent<Rigidbody2D>().velocity = movement;                     //移动玩家
+            if (Input.GetKey("j"))
+            {
+                if (cooldown <= 0)
+                {
+                    cooldown = 1f / weapon.attackSpeed;
+                    Attack();
+                }
+            }
         }
     }
 	void OnTriggerEnter2D (Collider2D other)
@@ -58,6 +71,7 @@ public class Player : MonoBehaviour
 			other.gameObject.SetActive (false);
 		//	Destroy(other.gameObject);
 		}*/
+        if (other.tag != "Weapon")
         CameraMove(other);
 	}
     
@@ -89,5 +103,11 @@ public class Player : MonoBehaviour
             cameraMove.y = camera.position.y;
         }
         isCameraMove = true;
+    }
+
+    //攻击
+    public void Attack()
+    {
+        Instantiate(weaponImg, transform.position, Quaternion.identity);
     }
 }

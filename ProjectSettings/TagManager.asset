@@ -9,6 +9,7 @@ TagManager:
   - dDoor
   - lDoor
   - rDoor
+  - Weapon
   layers:
   - Default
   - TransparentFX

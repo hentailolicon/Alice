@@ -23,13 +23,13 @@ public class BuildAnimation : Editor
 		DirectoryInfo raw = new DirectoryInfo (ImagePath);		
 		foreach (DirectoryInfo dictorys in raw.GetDirectories()) 
 		{
-            string parentName = System.IO.Directory.GetParent(dictorys.FullName).Name;
 			List<AnimationClip> clips = new List<AnimationClip>();
 			foreach (DirectoryInfo dictoryAnimations in dictorys.GetDirectories()) 
 			{
-                if (!File.Exists(AnimationPath + "/" + parentName + "/" + dictorys.Name + ".anim"))
-                //每个文件夹就是一组帧动画，这里把每个文件夹下的所有图片生成出一个动画文件
+                string parentName = System.IO.Directory.GetParent(dictoryAnimations.FullName).Name;
+                if (!File.Exists(AnimationPath + "/" + parentName + "/" + dictoryAnimations.Name + ".anim"))
                 {
+                    //每个文件夹就是一组帧动画，这里把每个文件夹下的所有图片生成出一个动画文件
                     clips.Add(BuildAnimationClip(dictoryAnimations));
                 }
 			}

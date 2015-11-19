@@ -7,19 +7,25 @@ public class Player : MonoBehaviour
     public Vector2 speed = new Vector2(3, 3);                        //玩家速度
     public GameObject weaponImg;
 
+    //玩家状态 普通状态 移动视角状态 受到攻击状态
+    private const string NORMAL = "normal";
+    private const string MOVECAMERA = "movecamera";
+    private const string ATTACKED = "attacked";
+
     private Vector2 movement;                                        //玩家位移 = 玩家速度 * 方向
     private Animator anim;                                           //玩家动画控制器
-    private CameraFollow camerafollow = new CameraFollow();
-    private Transform camera;                                        //主视角transform
-    private bool isCameraMove = false;                               //摄像机是否在移动
+    private Transform cameraView;                                    //主视角transform
     private Vector2 cameraMove = new Vector2(0, 28.8f);              //摄像机将要移动到的坐标
     private float cooldown = 0;
-    private Weapon weapon = new Weapon();
+    private int attackSpeed;
+    private string state = NORMAL;
+    private Vector3 repelForce;
     // Use this for initialization
     void Start()
     {
         anim = GetComponent<Animator>();
-        camera = GameObject.FindGameObjectWithTag("MainCamera").transform;     //获得主摄像机transform
+        attackSpeed = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>().attackSpeed;
+        cameraView = GameObject.FindGameObjectWithTag("MainCamera").transform;     //获得主摄像机transform
     }
 
     // Update is called once per frame
@@ -32,48 +38,76 @@ public class Player : MonoBehaviour
     }
     void FixedUpdate()
     {
-        float inputX = Input.GetAxis("Horizontal");
-        float inputY = Input.GetAxis("Vertical");
-        if (isCameraMove)
+        float inputX = 0f;
+        float inputY = 0f;
+        if (!(Input.GetKey("a") && Input.GetKey("d")))
         {
-            GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);           //停止玩家移动
-            //设置动画
-            anim.SetFloat("horSpeed", 0);
-            anim.SetFloat("verSpeed", 0);
-            //移动摄像机
-            camerafollow.TrackPlayer(camera, cameraMove);
-            //判断摄像机是否到达预定地点
-            if ((Mathf.Abs(cameraMove.x - camera.position.x) < 0.01) && (Mathf.Abs(cameraMove.y - camera.position.y) < 0.01))
-            {
-                isCameraMove = false;
-            }
+            //获得平滑移动量
+            inputX = Input.GetAxis("Horizontal");   
         }
-        else
+        if(!(Input.GetKey("w") && Input.GetKey("s")))
         {
-            anim.SetFloat("horSpeed", inputX);
-            anim.SetFloat("verSpeed", inputY);
-            movement = new Vector2(speed.x * inputX, speed.y * inputY);
-            GetComponent<Rigidbody2D>().velocity = movement;                     //移动玩家
-            if (Input.GetKey("j"))
-            {
-                if (cooldown <= 0)
+            inputY = Input.GetAxis("Vertical");
+        }
+        switch (state)
+        {
+            case NORMAL:
+                //设置动画切换参数，前两个参数控制切换到哪个动画，后两个参数实现动画立即切换
+                anim.SetFloat("horSpeed", inputX);
+                anim.SetFloat("verSpeed", inputY);
+                anim.SetFloat("horRaw", Input.GetAxisRaw("Horizontal"));
+                anim.SetFloat("verRaw", Input.GetAxisRaw("Vertical"));
+                movement = new Vector2(speed.x * inputX, speed.y * inputY);
+                GetComponent<Rigidbody2D>().velocity = movement;                     //移动玩家
+                if (Input.GetKey("j"))
                 {
-                    cooldown = 1f / weapon.attackSpeed;
-                    Attack();
+                    if (cooldown <= 0)
+                    {
+                        cooldown = 1f / attackSpeed;
+                        Attack();
+                    }
                 }
-            }
+                break;
+            case MOVECAMERA:
+                GetComponent<Rigidbody2D>().Sleep();                                  //停止玩家移动
+                //设置动画
+                anim.SetFloat("horSpeed", 0);
+                anim.SetFloat("verSpeed", 0);
+                //移动摄像机
+                CameraFollow.TrackPlayer(cameraView, cameraMove);
+                //判断摄像机是否到达预定地点
+                if ((Mathf.Abs(cameraMove.x - cameraView.position.x) < 0.01f) && (Mathf.Abs(cameraMove.y - cameraView.position.y) < 0.01f))
+                {
+                    SetState(NORMAL);
+                }
+                break;
+            case ATTACKED:
+                if (cooldown > 0)
+                {
+                    GetComponent<Rigidbody2D>().velocity = repelForce;
+                }
+                else
+                    SetState(NORMAL);
+                break;
         }
     }
 	void OnTriggerEnter2D (Collider2D other)
 	{
-	/*	if (other.tag == "bd") 
-		{
-			other.gameObject.SetActive (false);
-		//	Destroy(other.gameObject);
-		}*/
-        if (other.tag != "Weapon")
-        CameraMove(other);
+        if (other.tag.IndexOf("Door")>=0)
+        {
+            CameraMove(other);
+        }
 	}
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject .tag == "Enemy")
+        {
+            SetState(ATTACKED);
+            repelForce = GameManager.instance.GetDirectionForce(other.transform.position, transform.position, 2.5f);
+            cooldown = 0.3f;
+        }
+    }
     
     //移动摄像机
     private void CameraMove(Collider2D other)
@@ -81,33 +115,37 @@ public class Player : MonoBehaviour
         if (other.tag == "uDoor")
         {
             transform.Translate(0, 2.6f, 0);
-            cameraMove.x = camera.position.x;
-            cameraMove.y = camera.position.y + GameManager.instance.px_y;
+            cameraMove.x = cameraView.position.x;
+            cameraMove.y = cameraView.position.y + GameManager.instance.px_y;
         }
         else if (other.tag == "dDoor")
         {
             transform.Translate(0, -2.6f, 0);
-            cameraMove.x = camera.position.x;
-            cameraMove.y = camera.position.y - GameManager.instance.px_y;
+            cameraMove.x = cameraView.position.x;
+            cameraMove.y = cameraView.position.y - GameManager.instance.px_y;
         }
         else if (other.tag == "lDoor")
         {
             transform.Translate(-4.0f, 0, 0);
-            cameraMove.x = camera.position.x - GameManager.instance.px_x;
-            cameraMove.y = camera.position.y;
+            cameraMove.x = cameraView.position.x - GameManager.instance.px_x;
+            cameraMove.y = cameraView.position.y;
         }
         else if (other.tag == "rDoor")
         {
             transform.Translate(4.0f, 0, 0);
-            cameraMove.x = camera.position.x + GameManager.instance.px_x;
-            cameraMove.y = camera.position.y;
+            cameraMove.x = cameraView.position.x + GameManager.instance.px_x;
+            cameraMove.y = cameraView.position.y;
         }
-        isCameraMove = true;
+        SetState(MOVECAMERA);
     }
 
     //攻击
     public void Attack()
     {
         Instantiate(weaponImg, transform.position, Quaternion.identity);
+    }
+    private void SetState(string state)
+    {
+        this.state = state;
     }
 }

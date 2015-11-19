@@ -35,7 +35,7 @@ public class CameraFollow : MonoBehaviour
 
     void FixedUpdate()
     {
-        //TrackPlayer();
+        TrackPlayer();
     }
 
 
@@ -60,7 +60,7 @@ public class CameraFollow : MonoBehaviour
         //设置摄像机的坐标
         transform.position = new Vector3(targetX, targetY, transform.position.z);
     }
-    public void TrackPlayer(Transform camera, Vector2 move)
+    public static void TrackPlayer(Transform camera, Vector2 move)
     {
         float targetX = camera.position.x;
         float targetY = camera.position.y;

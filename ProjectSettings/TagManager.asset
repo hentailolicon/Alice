@@ -4,12 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - bd
   - uDoor
   - dDoor
   - lDoor
   - rDoor
-  - Weapon
+  - PlayerWeapon
+  - Enemy
+  - Background
   layers:
   - Default
   - TransparentFX

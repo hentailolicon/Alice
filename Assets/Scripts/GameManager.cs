@@ -34,4 +34,22 @@ public class GameManager : MonoBehaviour
     {
 	
 	}
+
+    //获得某个方向的力，力的方向为start指向end，水平方向或垂直方向上的最大力为maxForce
+    public Vector3 GetDirectionForce(Vector3 start, Vector3 end, float maxForce)
+    {
+        Vector3 force = (end - start) * 10f;
+        float ratio = force.y / force.x;
+        if(Mathf.Abs(ratio)>1f)
+        {
+            force.y = force.y / Mathf.Abs(force.y) * maxForce;
+            force.x = force.y / ratio;
+        }
+        else
+        {
+            force.x = force.x / Mathf.Abs(force.x) * maxForce;
+            force.y = force.x * ratio;
+        }
+        return force;
+    }
 }

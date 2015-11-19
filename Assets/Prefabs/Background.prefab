@@ -12,7 +12,7 @@ GameObject:
   - 68: {fileID: 6883610}
   m_Layer: 0
   m_Name: Background
-  m_TagString: Untagged
+  m_TagString: Background
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,6 +100,10 @@ Prefab:
       value: 
       objectReference: {fileID: 21300000, guid: c670d1aff97bed14ab7ac19b07d8b67f,
         type: 3}
+    - target: {fileID: 0}
+      propertyPath: m_TagString
+      value: Background
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 174762}

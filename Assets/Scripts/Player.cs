@@ -73,6 +73,8 @@ public class Player : MonoBehaviour
                 //设置动画
                 anim.SetFloat("horSpeed", 0);
                 anim.SetFloat("verSpeed", 0);
+                anim.SetFloat("horRaw", 0);
+                anim.SetFloat("verRaw", 0);
                 //移动摄像机
                 CameraFollow.TrackPlayer(cameraView, cameraMove);
                 //判断摄像机是否到达预定地点
@@ -117,24 +119,28 @@ public class Player : MonoBehaviour
             transform.Translate(0, 2.6f, 0);
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y + GameManager.instance.px_y;
+            GameManager.miniMap.UpdateMap('u');
         }
         else if (other.tag == "dDoor")
         {
             transform.Translate(0, -2.6f, 0);
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y - GameManager.instance.px_y;
+            GameManager.miniMap.UpdateMap('d');
         }
         else if (other.tag == "lDoor")
         {
             transform.Translate(-4.0f, 0, 0);
             cameraMove.x = cameraView.position.x - GameManager.instance.px_x;
             cameraMove.y = cameraView.position.y;
+            GameManager.miniMap.UpdateMap('l');
         }
         else if (other.tag == "rDoor")
         {
             transform.Translate(4.0f, 0, 0);
             cameraMove.x = cameraView.position.x + GameManager.instance.px_x;
             cameraMove.y = cameraView.position.y;
+            GameManager.miniMap.UpdateMap('r');
         }
         SetState(MOVECAMERA);
     }

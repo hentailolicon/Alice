@@ -14,11 +14,11 @@ namespace Alice
         public static int[,] map = new int[x * 2 - 1, y * 2 + 1];
         public static int[,] d = new int[,] { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
         public Random Rand = new Random();
-        public int GetX()
+        public static int GetX()
         {
             return 2 * x - 1;
         }
-        public int GetY()
+        public static int GetY()
         {
             return 2 * y + 1;
         }

@@ -11,6 +11,7 @@ TagManager:
   - PlayerWeapon
   - Enemy
   - Background
+  - MiniMap
   layers:
   - Default
   - TransparentFX

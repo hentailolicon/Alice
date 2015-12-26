@@ -7,65 +7,205 @@ namespace Alice
 {
     class MapAlgo
     {
-        public const int MAZE_MAX = 50;
-        public const int x = 3;
-        public const int y = 3;
-        public static int[,] tmpmap = new int[MAZE_MAX + 2, MAZE_MAX + 2];
-        public static int[,] map = new int[x * 2 - 1, y * 2 + 1];
-        public static int[,] d = new int[,] { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
-        public Random Rand = new Random();
+        public const int x = 5;
+        public const int y = 7;
+        private static int startX;
+        private static int startY;
+        public int roomNum = 15;
+        private int initRoom = 0;
+        private int unlinkableCount = 0;
+        private int[,] map = new int[x, y];
+        private int[,] linkable = new int[x, y];
+        private Random rand = new Random();
         public static int GetX()
         {
-            return 2 * x - 1;
+            return x;
         }
         public static int GetY()
         {
-            return 2 * y + 1;
+            return y;
         }
-        private int search(int x, int y)
+
+        public static int GetStartX()
         {
-            int zx = x * 2, zy = y * 2, next, turn, i;
-            tmpmap[zx, zy] = 0;
-            int random = Rand.Next(2);
-            if (random == 1)
-                turn = 1;
-            else
-                turn = 3;
-            for (i = 0, next = Rand.Next(4); i < 4; i++, next = (next + turn) % 4)
-                if (tmpmap[zx + 2 * d[next, 0], zy + 2 * d[next, 1]] == 1)   //这里是zx + 2*d[next][0]...
+            return startX;
+        }
+        public static int GetStartY()
+        {
+            return startY;
+        }
+
+        private void Init()
+        {
+            startX = rand.Next(1, x - 1);
+            startY = rand.Next(1, y - 1);
+            for (int i = 0; i < x; i++)
+            {
+                for (int j = 0; j < y; j++)
                 {
-                    tmpmap[zx + d[next, 0], zy + d[next, 1]] = 0;      // 这里是zx + d[next][0]...
-                    search(x + d[next, 0], y + d[next, 1]);         // 这里是x + d[next][0]
+                    map[i, j] = 0;
+                    linkable[i, j] = 1;
                 }
-            return 0;
+            }
+            map[startX, startY] = 1;
+            initRoom++;
         }
-        private void Make_Maze(int x, int y)
+
+        private bool CheckLink(int i, int j)
         {
-            int z1, z2;
-            for (z1 = 0, z2 = 2 * y + 2; z1 <= 2 * x + 2; z1++)  // 数组最外围置0，表示无墙
+            if (map[i, j] > 0)
             {
-                tmpmap[z1, 0] = 0;
-                tmpmap[z1, z2] = 0;
+                return false;
             }
-            for (z1 = 0, z2 = 2 * x + 2; z1 <= 2 * y + 2; z1++)
+            int tmp = 0;
+            if (i + 1 < x)
             {
-                tmpmap[0, z1] = 0;
-                tmpmap[z2, z1] = 0;
+                tmp += map[i + 1, j];
             }
-            tmpmap[1, 2] = 0; tmpmap[2 * x + 1, 2 * y] = 0;      //入口和出口
-            search(Rand.Next(x) + 1, Rand.Next(y) + 1);
+            if (i > 0)
+            {
+                tmp += map[i - 1, j];
+            }
+            if (j + 1 < y)
+            {
+                tmp += map[i, j + 1];
+            }
+            if (j > 0)
+            {
+                tmp += map[i, j - 1];
+            }
+            while (tmp > 4)
+            {
+                tmp -= 9;
+            }
+            if (tmp == 1)
+            {
+                map[i, j] = 1;
+                return true;
+            }
+            else
+            {
+                map[i, j] = 9;
+                return false;
+            }
+
+        }
+
+        private bool CheckChoose(int i, int j)
+        {
+            int tmp = 0;
+            if ((i + 1 < x) && map[i + 1, j] > 0)
+            {
+                tmp++;
+            }
+            if ((i > 1) && map[i - 1, j] > 0)
+            {
+                tmp++;
+            }
+            if ((j + 1 < y) && map[i, j + 1] > 0)
+            {
+                tmp++;
+            }
+            if ((j > 1) && map[i, j - 1] > 0)
+            {
+                tmp++;
+            }
+            if (tmp == 4)
+            {
+                linkable[i, j] = 0;
+                unlinkableCount++;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private void ChooseLink(int i, int j)
+        {
+            if (!CheckChoose(i, j))
+            {
+                return;
+            }
+            int tmp = rand.Next(4);
+            bool success = false;
+            if (tmp == 0 && (i + 1 < x))
+            {
+                success = CheckLink(i + 1, j);
+                if (!success)
+                {
+                    tmp++;
+                }
+            }
+            if (tmp == 1 && (i > 0))
+            {
+                success = CheckLink(i - 1, j);
+                if (!success)
+                {
+                    tmp++;
+                }
+            }
+            if (tmp == 2 && (j + 1 < y))
+            {
+                success = CheckLink(i, j + 1);
+                if (!success)
+                {
+                    tmp++;
+                }
+            }
+            if (tmp == 3 && (j > 0))
+            {
+                success = CheckLink(i, j - 1);
+                if (!success && (i + 1 < x))
+                {
+                    success = CheckLink(i + 1, j);
+                }
+            }
+            if (success)
+            {
+                initRoom++;
+            }
         }
         public int[,] create()
         {
-            for (int i = 0; i <= x * 2 + 2; ++i)
-                for (int j = 0; j <= y * 2 + 2; ++j)
-                    tmpmap[i, j] = 1;
-            Make_Maze(x, y);
-            for (int z2 = 0; z2 < y * 2 - 1; z2++)
+            Init();
+            int startTime = System.Environment.TickCount;
+            while (true)
             {
-                for (int z1 = 0; z1 < x * 2 + 1; z1++)
+                int count = rand.Next(initRoom - unlinkableCount);
+                bool flag = false;
+                for (int i = 0; i < x; i++)
                 {
-                    map[z2, z1] = tmpmap[y * 2 + 1 - z1, z2 + 2];
+                    for (int j = 0; j < y; j++)
+                    {
+                        if (map[i, j] == 1 && linkable[i, j] == 1)
+                        {
+                            if (count == 0)
+                            {
+                                ChooseLink(i, j);
+                                flag = true;
+                                break;
+                            }
+                            else
+                            {
+                                count--;
+                            }
+                        }
+                    }
+                    if (flag)
+                    {
+                        break;
+                    }
+                }
+                if (roomNum == initRoom)
+                {
+                    break;
+                }
+                int endTime = System.Environment.TickCount;
+                if (endTime - startTime > 100)
+                {
+                    break;
                 }
             }
             return map;

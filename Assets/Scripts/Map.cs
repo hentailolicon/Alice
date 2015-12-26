@@ -30,7 +30,7 @@ public class Map : MonoBehaviour
         {
             for (int j = 0; j < MapAlgo.GetY(); j++)
             {
-                if (mapBoard[i, j] == 0)
+                if (mapBoard[i, j] == 1)
                 {
                     Instantiate(background, new Vector3(j * GameManager.instance.px_x, i * GameManager.instance.px_y, 10f), Quaternion.identity);
                     CreateDoor(i, j);
@@ -42,19 +42,19 @@ public class Map : MonoBehaviour
     //生成门
     private void CreateDoor(int i, int j)
     {
-        if ((i > 0) && (mapBoard[i - 1, j] == 0))
+        if ((i > 0) && (mapBoard[i - 1, j] == 1))
         {
             Instantiate(door[1], new Vector3(j * GameManager.instance.px_x, i * GameManager.instance.px_y - 2.8f, 9f), Quaternion.identity);
         }
-        if ((i < MapAlgo.GetX() - 1) && (mapBoard[i + 1, j] == 0))
+        if ((i < MapAlgo.GetX() - 1) && (mapBoard[i + 1, j] == 1))
         {
             Instantiate(door[0], new Vector3(j * GameManager.instance.px_x, i * GameManager.instance.px_y + 2.8f, 9f), Quaternion.identity);
         }
-        if ((j > 0) && (mapBoard[i, j - 1] == 0))
+        if ((j > 0) && (mapBoard[i, j - 1] == 1))
         {
             Instantiate(door[2], new Vector3(j * GameManager.instance.px_x - 4.9f, i * GameManager.instance.px_y, 9f), Quaternion.identity);
         }
-        if ((j < MapAlgo.GetY() - 1) && (mapBoard[i, j + 1] == 0))
+        if ((j < MapAlgo.GetY() - 1) && (mapBoard[i, j + 1] == 1))
         {
             Instantiate(door[3], new Vector3(j * GameManager.instance.px_x + 4.9f, i * GameManager.instance.px_y, 9f), Quaternion.identity);
         }

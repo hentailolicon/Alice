@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Alice;
 
 public class Player : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Player : MonoBehaviour
     private Vector2 movement;                                        //玩家位移 = 玩家速度 * 方向
     private Animator anim;                                           //玩家动画控制器
     private Transform cameraView;                                    //主视角transform
-    private Vector2 cameraMove = new Vector2(0, 28.8f);              //摄像机将要移动到的坐标
+    private Vector2 cameraMove = new Vector2(0, 0);                  //摄像机将要移动到的坐标
     private float cooldown = 0;
     private int attackSpeed;
     private string state = NORMAL;
@@ -26,6 +27,9 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         attackSpeed = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>().attackSpeed;
         cameraView = GameObject.FindGameObjectWithTag("MainCamera").transform;     //获得主摄像机transform
+        Vector2 start= new Vector2(MapAlgo.GetStartY() * GameManager.instance.px_x, MapAlgo.GetStartX() * GameManager.instance.px_y);
+        transform.position = new Vector3(start.x,start.y,3);
+        cameraView.position = new Vector3(start.x, start.y,-10);
     }
 
     // Update is called once per frame

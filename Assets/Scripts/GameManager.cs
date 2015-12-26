@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public float mini_x = 0.21f;
     public float mini_y = 0.19f;
     public static int[,] mapBoard;
-    public static int site_x = MapAlgo.GetX() - 1;
+    public static int site_x;
     public static int site_y;
     public static MiniMap miniMap;
 
@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     {
         map.CreateMap();
         mapBoard = map.mapBoard;
+        site_x = MapAlgo.GetStartX();
+        site_y = MapAlgo.GetStartY();
         miniMap.Init();
 	}
 	

@@ -15,7 +15,7 @@ public class MiniMap : MonoBehaviour
         cameraMove = new Vector2(0, GameManager.site_x * GameManager.instance.mini_y);
         cameraView.position = cameraMove;
         playSite = Instantiate(img[2], new Vector3(0, 0, 8f), Quaternion.identity) as GameObject;
-        GameManager.mapBoard[GameManager.site_x, 0] = 2;
+        GameManager.mapBoard[GameManager.site_x, GameManager.site_y] = 2;
         GameManager.mapBoard[0, 0] = 3;
         UpdateImg();
 	}
@@ -55,22 +55,22 @@ public class MiniMap : MonoBehaviour
         int i, j;
         i = GameManager.site_x;
         j = GameManager.site_y;
-        if ((i > 0) && (GameManager.mapBoard[i - 1, j] == 0))
+        if ((i > 0) && (GameManager.mapBoard[i - 1, j] == 1))
         {
             Instantiate(img[0], new Vector3(j * GameManager.instance.mini_x, (i-1) * GameManager.instance.mini_y, 10f), Quaternion.identity);
             GameManager.mapBoard[i - 1, j] = 2;
         }
-        if ((i < MapAlgo.GetX() - 1) && (GameManager.mapBoard[i + 1, j] == 0))
+        if ((i < MapAlgo.GetX() - 1) && (GameManager.mapBoard[i + 1, j] == 1))
         {
             Instantiate(img[0], new Vector3(j * GameManager.instance.mini_x, (i+1) * GameManager.instance.mini_y, 10f), Quaternion.identity);
             GameManager.mapBoard[i + 1, j] = 2;
         }
-        if ((j > 0) && (GameManager.mapBoard[i, j - 1] == 0))
+        if ((j > 0) && (GameManager.mapBoard[i, j - 1] == 1))
         {
             Instantiate(img[0], new Vector3((j-1) * GameManager.instance.mini_x, i * GameManager.instance.mini_y, 10f), Quaternion.identity);
             GameManager.mapBoard[i, j - 1] = 2;
         }
-        if ((j < MapAlgo.GetY() - 1) && (GameManager.mapBoard[i, j + 1] == 0))
+        if ((j < MapAlgo.GetY() - 1) && (GameManager.mapBoard[i, j + 1] == 1))
         {
             Instantiate(img[0], new Vector3((j+1) * GameManager.instance.mini_x, i * GameManager.instance.mini_y, 10f), Quaternion.identity);
             GameManager.mapBoard[i, j + 1] = 2;

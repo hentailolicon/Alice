@@ -12,6 +12,7 @@ TagManager:
   - Enemy
   - Background
   - MiniMap
+  - Prop
   layers:
   - Default
   - TransparentFX

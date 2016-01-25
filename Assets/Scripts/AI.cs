@@ -7,8 +7,8 @@ using System;
 public class AI : MonoBehaviour
 {
     public float speed = 1;
-    public int HP = 50;
-    public Transform player;
+    public float HP = 50;
+    protected Transform player;
 
     //敌人状态 普通状态 追击主角状态 攻击主角状态
     public const string NORMAL = "normal";
@@ -39,7 +39,7 @@ public class AI : MonoBehaviour
     {
         if (other.tag == "PlayerWeapon")
         {
-            HP -= other.GetComponent<Weapon>().damage;
+            HP -= GameManager.instance.PSV.damage;
             if (HP <= 0)
             {
                 Destroy(gameObject);

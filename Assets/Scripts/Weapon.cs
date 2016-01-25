@@ -3,10 +3,10 @@ using System.Collections;
 
 public class Weapon : MonoBehaviour
 {
-    public int speed = 5;                                     //武器速度
-    public int damage = 10;                                   //武器攻击力
-    public int range = 4;                                     //武器射程
-    public int attackSpeed = 3;                               //攻速
+    public float speed = 5f;                                     //武器速度
+    public float damage = 10f;                                   //武器攻击力
+    public float range = 4f;                                     //武器射程
+    public float attackSpeed = 3f;                               //攻速
 
     private float startX;
     private float force = 0f;

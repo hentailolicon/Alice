@@ -5,8 +5,11 @@ using Alice;
 public class Player : MonoBehaviour
 {
 
-    public Vector2 speed = new Vector2(3, 3);                        //玩家速度
-    public GameObject weaponImg;
+    public float speed = 3f;                                             //玩家移动速度
+    public float HP = 30f;
+    public float HPMax = 30f;
+    public float luck = 2f;
+    public GameObject weapon;
 
     //玩家状态 普通状态 移动视角状态 受到攻击状态
     private const string NORMAL = "normal";
@@ -18,7 +21,7 @@ public class Player : MonoBehaviour
     private Transform cameraView;                                    //主视角transform
     private Vector2 cameraMove = new Vector2(0, 0);                  //摄像机将要移动到的坐标
     private float cooldown = 0;
-    private int attackSpeed;
+    private float attackSpeed;
     private string state = NORMAL;
     private Vector3 repelForce;
     // Use this for initialization
@@ -61,7 +64,7 @@ public class Player : MonoBehaviour
                 anim.SetFloat("verSpeed", inputY);
                 anim.SetFloat("horRaw", Input.GetAxisRaw("Horizontal"));
                 anim.SetFloat("verRaw", Input.GetAxisRaw("Vertical"));
-                movement = new Vector2(speed.x * inputX, speed.y * inputY);
+                movement = new Vector2(speed * inputX, speed * inputY);
                 GetComponent<Rigidbody2D>().velocity = movement;                     //移动玩家
                 if (Input.GetKey("j"))
                 {
@@ -152,7 +155,8 @@ public class Player : MonoBehaviour
     //攻击
     public void Attack()
     {
-        Instantiate(weaponImg, transform.position, Quaternion.identity);
+        Instantiate(weapon, transform.position, Quaternion.identity);
+        GameManager.instance.PropEffectClearing();
     }
     private void SetState(string state)
     {

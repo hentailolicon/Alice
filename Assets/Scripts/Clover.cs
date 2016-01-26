@@ -13,16 +13,16 @@ public class Clover:Prop
 
     public override void Active()
     {
-        GameManager.instance.UpdatePlayerState(GameManager.PlayerState.LUCK, 2);
+        GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.LUCK, 2);
         GameManager.instance.props.Add(this);
     }
 
-    public override void OtherEffect(GameManager.PlayerStateValue PSV)
+    public override void OtherEffect()
     {
         int value = rand.Next(100);
-        if (value < 4)
+        if (value < 50)
         {
-            PSV.damage *= 5.44f;
+            GameManager.instance.PAV.damage += GameManager.instance.GetPlayerAttributeValue(GameManager.PlayerAttribute.DAMAGE) * 4.44f;
         }
     }
 }

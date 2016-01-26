@@ -39,7 +39,7 @@ public class AI : MonoBehaviour
     {
         if (other.tag == "PlayerWeapon")
         {
-            HP -= GameManager.instance.PSV.damage;
+            HP -= GameManager.instance.PAV.damage;
             if (HP <= 0)
             {
                 Destroy(gameObject);

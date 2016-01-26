@@ -4,7 +4,7 @@ using Alice;
 
 public class Player : MonoBehaviour
 {
-
+    public float damage = 10f; 
     public float speed = 3f;                                             //玩家移动速度
     public float HP = 30f;
     public float HPMax = 30f;

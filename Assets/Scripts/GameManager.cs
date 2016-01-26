@@ -4,26 +4,13 @@ using System.Collections.Generic;
 using Alice;
 public class GameManager : MonoBehaviour 
 {
-    public enum PlayerState
+    public enum PlayerAttribute
     {
-        HP = 1,
-        HPMax = 2,
-        LUCK = 3,
-        SPEED = 4
-    }
-
-    public class PlayerStateValue
-    {
-        public float damage = 10f;
-        public float speed;
-        public float HP;
-        public float HPMax;
-        public float luck;
-
-        public void reset()
-        {
-            damage = 10f;
-        }
+        DAMAGE = 1,
+        HP = 2,
+        HPMax = 3,
+        LUCK = 4,
+        SPEED = 5
     }
 
     public static GameManager instance = null;				//单例模式
@@ -37,7 +24,7 @@ public class GameManager : MonoBehaviour
     public static MiniMap miniMap;
 
     public List<Prop> props;                                //道具效果列表
-    public PlayerStateValue PSV = new PlayerStateValue();   //记录所有效果结算后的玩家各项数值
+    public PlayerAttributeValue PAV;                        //记录所有效果结算后的玩家各项数值
 
     private Map map;                                        //地图
     private Player player;
@@ -66,6 +53,7 @@ public class GameManager : MonoBehaviour
         site_y = MapAlgo.GetStartY();
         miniMap.Init();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        PAV = new PlayerAttributeValue();
 	}
 	
 	// Update is called once per frame
@@ -92,11 +80,35 @@ public class GameManager : MonoBehaviour
         return force;
     }
 
-    public void UpdatePlayerState(PlayerState attribute, int value)
+    public float GetPlayerAttributeValue(PlayerAttribute attribute)
+    {
+        float value = 0f;
+        switch (attribute)
+        {
+            case PlayerAttribute.DAMAGE:
+                value =  player.damage;
+                break;
+            case PlayerAttribute.HP:
+                value = player.HP;
+                break;
+            case PlayerAttribute.HPMax:
+                value = player.HPMax;
+                break;
+            case PlayerAttribute.LUCK:
+                value = player.luck;
+                break;
+            case PlayerAttribute.SPEED:
+                value = player.speed;
+                break;
+        }
+        return value;
+    }
+
+    public void UpdatePlayerAttributeValue(PlayerAttribute attribute, int value)
     {
         switch (attribute)
         {
-            case PlayerState.HP:
+            case PlayerAttribute.HP:
                 player.HP += value;
                 if(player.HP>player.HPMax)
                 {
@@ -107,17 +119,17 @@ public class GameManager : MonoBehaviour
 
                 }
                 break;
-            case PlayerState.HPMax:
+            case PlayerAttribute.HPMax:
                 player.HPMax += value;
                 if(player.HPMax<=0)
                 {
 
                 }
                 break;
-            case PlayerState.LUCK:
+            case PlayerAttribute.LUCK:
                 player.luck += value;
                 break;
-            case PlayerState.SPEED:
+            case PlayerAttribute.SPEED:
                 player.speed += value;
                 break;
         }
@@ -125,10 +137,10 @@ public class GameManager : MonoBehaviour
 
     public void PropEffectClearing()
     {
-        PSV.reset();
+        PAV.reset();
         for(int i=0;i<props.Count;i++)
         {
-            props[i].OtherEffect(PSV);
+            props[i].OtherEffect();
         }
     }
 }

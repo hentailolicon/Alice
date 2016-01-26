@@ -18,7 +18,7 @@ public class Prop : MonoBehaviour
 
     public virtual void Active() { }
 
-    public virtual void OtherEffect(GameManager.PlayerStateValue PSV) { }
+    public virtual void OtherEffect() { }
 
     void OnTriggerEnter2D(Collider2D other)
     {

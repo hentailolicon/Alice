@@ -20,27 +20,28 @@ public class Player : MonoBehaviour
     private Animator anim;                                           //玩家动画控制器
     private Transform cameraView;                                    //主视角transform
     private Vector2 cameraMove = new Vector2(0, 0);                  //摄像机将要移动到的坐标
-    private float cooldown = 0;
-    private float attackSpeed;
-    private string state = NORMAL;
-    private Vector3 repelForce;
+    private float attackCooldown = 0;                                //攻击冷却时间
+    private float attackSpeed;                                       //攻速
+    private string state = NORMAL;                                   //玩家状态
+    private Vector3 repelForce;                                      //玩家受到攻击时的受到的击退力
     // Use this for initialization
     void Start()
     {
         anim = GetComponent<Animator>();
         attackSpeed = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>().attackSpeed;
-        cameraView = GameObject.FindGameObjectWithTag("MainCamera").transform;     //获得主摄像机transform
-        Vector2 start= new Vector2(MapAlgo.GetStartY() * GameManager.instance.px_x, MapAlgo.GetStartX() * GameManager.instance.px_y);
-        transform.position = new Vector3(start.x,start.y,3);
-        cameraView.position = new Vector3(start.x, start.y,-10);
+        cameraView = GameObject.FindGameObjectWithTag("MainCamera").transform;                                                           //获得主摄像机transform
+        Vector2 start= new Vector2(MapAlgo.GetStartY() * GameManager.instance.px_x, MapAlgo.GetStartX() * GameManager.instance.px_y);    //获得初始坐标
+        transform.position = new Vector3(start.x,start.y,3);                                                                             //设置玩家初始坐标
+        cameraView.position = new Vector3(start.x, start.y,-10);                                                                         //设置主摄像机初始坐标
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (cooldown > 0)
+        //更新攻击冷却时间
+        if (attackCooldown > 0)
         {
-            cooldown -= Time.deltaTime;
+            attackCooldown -= Time.deltaTime;
         }
     }
     void FixedUpdate()
@@ -64,19 +65,22 @@ public class Player : MonoBehaviour
                 anim.SetFloat("verSpeed", inputY);
                 anim.SetFloat("horRaw", Input.GetAxisRaw("Horizontal"));
                 anim.SetFloat("verRaw", Input.GetAxisRaw("Vertical"));
+                //移动玩家
                 movement = new Vector2(speed * inputX, speed * inputY);
-                GetComponent<Rigidbody2D>().velocity = movement;                     //移动玩家
+                GetComponent<Rigidbody2D>().velocity = movement;  
+                //攻击  
                 if (Input.GetKey("j"))
                 {
-                    if (cooldown <= 0)
+                    if (attackCooldown <= 0)
                     {
-                        cooldown = 1f / attackSpeed;
+                        attackCooldown = 1f / attackSpeed;
                         Attack();
                     }
                 }
                 break;
             case MOVECAMERA:
-                GetComponent<Rigidbody2D>().Sleep();                                  //停止玩家移动
+                //停止玩家移动
+                GetComponent<Rigidbody2D>().Sleep();                                
                 //设置动画
                 anim.SetFloat("horSpeed", 0);
                 anim.SetFloat("verSpeed", 0);
@@ -91,7 +95,7 @@ public class Player : MonoBehaviour
                 }
                 break;
             case ATTACKED:
-                if (cooldown > 0)
+                if (attackCooldown > 0)
                 {
                     GetComponent<Rigidbody2D>().velocity = repelForce;
                 }
@@ -104,7 +108,7 @@ public class Player : MonoBehaviour
 	{
         if (other.tag.IndexOf("Door")>=0)
         {
-            CameraMove(other);
+            SceneMove(other);
         }
 	}
 
@@ -114,18 +118,22 @@ public class Player : MonoBehaviour
         {
             SetState(ATTACKED);
             repelForce = GameManager.instance.GetDirectionForce(other.transform.position, transform.position, 2.5f);
-            cooldown = 0.3f;
+            attackCooldown = 0.3f;
         }
     }
-    
-    //移动摄像机
-    private void CameraMove(Collider2D other)
+
+    //场景移动，包括玩家，主摄像机，小地图摄像机的移动
+    private void SceneMove(Collider2D other)
     {
+        //判断玩家进入了哪个门
         if (other.tag == "uDoor")
         {
+            //玩家移动
             transform.Translate(0, 2.6f, 0);
+            //主摄像机移动
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y + GameManager.instance.px_y;
+            //小地图摄像机
             GameManager.miniMap.UpdateMap('u');
         }
         else if (other.tag == "dDoor")

@@ -15,9 +15,9 @@ namespace Alice
 
         public PlayerAttributeValue()
         {
-            reset();
+            Reset();
         }
-        public void reset()
+        public void Reset()
         {
             damage = GameManager.instance.GetPlayerAttributeValue(GameManager.PlayerAttribute.DAMAGE);
         }

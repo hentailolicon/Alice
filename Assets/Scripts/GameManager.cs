@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour
         return force;
     }
 
+    //得到玩家各项数值
     public float GetPlayerAttributeValue(PlayerAttribute attribute)
     {
         float value = 0f;
@@ -104,6 +105,7 @@ public class GameManager : MonoBehaviour
         return value;
     }
 
+    //更新玩家各项属性数值
     public void UpdatePlayerAttributeValue(PlayerAttribute attribute, int value)
     {
         switch (attribute)
@@ -121,6 +123,10 @@ public class GameManager : MonoBehaviour
                 break;
             case PlayerAttribute.HPMax:
                 player.HPMax += value;
+                if (player.HP > player.HPMax)
+                {
+                    player.HP = player.HPMax;
+                }
                 if(player.HPMax<=0)
                 {
 
@@ -135,9 +141,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //道具效果清算
     public void PropEffectClearing()
     {
-        PAV.reset();
+        PAV.Reset();
         for(int i=0;i<props.Count;i++)
         {
             props[i].OtherEffect();

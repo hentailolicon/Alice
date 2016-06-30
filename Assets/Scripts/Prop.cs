@@ -16,8 +16,10 @@ public class Prop : MonoBehaviour
 	
 	}
 
+    //应用道具固定永久数值效果
     public virtual void Active() { }
 
+    //应用道具随机或者比例数值效果
     public virtual void OtherEffect() { }
 
     void OnTriggerEnter2D(Collider2D other)

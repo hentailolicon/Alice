@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 499504}
   - 212: {fileID: 21273108}
   m_Layer: 0
-  m_Name: minimap_3
+  m_Name: Minimap_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

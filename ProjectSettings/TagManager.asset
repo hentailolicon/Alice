@@ -13,6 +13,13 @@ TagManager:
   - Background
   - MiniMap
   - Prop
+  - Rock
+  - BombSet
+  - BombExplosion
+  - MiniBG
+  - Spike
+  - EnemyWeapon
+  - Poop
   layers:
   - Default
   - TransparentFX

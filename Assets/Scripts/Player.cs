@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Random = UnityEngine.Random;
 using Alice;
 
 public class Player : MonoBehaviour
@@ -9,7 +10,12 @@ public class Player : MonoBehaviour
     public int HP = 30;
     public int HPMax = 30;
     public int luck = 2;
+    public int bomb = 3;
+    public int coin = 0;
+    public float immuneTime = 0;                                       //免疫伤害时间
     public GameObject weapon;
+    public GameObject[] bombObj;
+    public Prop prop = null;
 
     //玩家状态 普通状态 移动视角状态 受到攻击状态
     private const string NORMAL = "normal";
@@ -21,14 +27,18 @@ public class Player : MonoBehaviour
     private Transform cameraView;                                    //主视角transform
     private Vector2 cameraMove = new Vector2(0, 0);                  //摄像机将要移动到的坐标
     private float attackCooldown = 0;                                //攻击冷却时间
+    private float bombCooldown = 0;                                  //炸弹冷却时间
     private float attackSpeed;                                       //攻速
     private string state = NORMAL;                                   //玩家状态
     private Vector3 repelForce;                                      //玩家受到攻击时的受到的击退力
+    private int bombSetCount = 0;
+    private int bombExplosionCount = 0;
+
     // Use this for initialization
     void Start()
     {
         anim = GetComponent<Animator>();
-        attackSpeed = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>().attackSpeed;
+        attackSpeed = weapon.GetComponent<Weapon>().attackSpeed;
         cameraView = GameObject.FindGameObjectWithTag("MainCamera").transform;                                                           //获得主摄像机transform
         Vector2 start= new Vector2(MapAlgo.GetStartY() * GameManager.instance.px_x, MapAlgo.GetStartX() * GameManager.instance.px_y);    //获得初始坐标
         transform.position = new Vector3(start.x,start.y,3);                                                                             //设置玩家初始坐标
@@ -42,6 +52,42 @@ public class Player : MonoBehaviour
         if (attackCooldown > 0)
         {
             attackCooldown -= Time.deltaTime;
+        }
+        if (bombCooldown > 0)
+        {
+            bombCooldown -= Time.deltaTime;
+        }
+        if (immuneTime > 0)
+        {
+            immuneTime -= Time.deltaTime;
+        }
+        if (bombSetCount > 0)
+        {
+            GameObject[] bombs = GameObject.FindGameObjectsWithTag("BombSet");
+            foreach (GameObject bomb in bombs)
+            {
+                AnimatorStateInfo animatorInfo = bomb.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
+                if (animatorInfo.normalizedTime >= 1)
+                {
+                    Instantiate(bombObj[1], bomb.transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
+                    bombExplosionCount++;
+                    Destroy(bomb);
+                    bombSetCount--;
+                }
+            }
+        }
+        if (bombExplosionCount > 0)
+        {
+            GameObject[] bombs = GameObject.FindGameObjectsWithTag("BombExplosion");
+            foreach (GameObject bomb in bombs)
+            {
+                AnimatorStateInfo animatorInfo = bomb.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
+                if (animatorInfo.normalizedTime >= 1)
+                {
+                    Destroy(bomb);
+                    bombExplosionCount--;
+                }
+            }
         }
     }
     void FixedUpdate()
@@ -60,6 +106,10 @@ public class Player : MonoBehaviour
         switch (state)
         {
             case NORMAL:
+                if(immuneTime < 0)
+                {
+                    anim.SetBool("isAttacted", false);
+                }
                 //设置动画切换参数，前两个参数控制切换到哪个动画，后两个参数实现动画立即切换
                 anim.SetFloat("horSpeed", inputX);
                 anim.SetFloat("verSpeed", inputY);
@@ -69,12 +119,43 @@ public class Player : MonoBehaviour
                 movement = new Vector2(speed * inputX, speed * inputY);
                 GetComponent<Rigidbody2D>().velocity = movement;  
                 //攻击  
-                if (Input.GetKey("j"))
+                if (Mathf.Abs(Input.GetAxisRaw("HorizontalArrow")) + Mathf.Abs(Input.GetAxisRaw("VerticalArrow")) > 0f)
                 {
                     if (attackCooldown <= 0)
                     {
                         attackCooldown = 1f / attackSpeed;
                         Attack();
+                    }
+                }
+                //设置攻击方向图片
+                if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) + Mathf.Abs(Input.GetAxisRaw("Vertical")) < 0.01f)
+                {
+                    anim.SetFloat("horArrowRaw", Input.GetAxisRaw("HorizontalArrow"));
+                    anim.SetFloat("verArrowRaw", Input.GetAxisRaw("VerticalArrow"));
+                }
+                else
+                {
+                    anim.SetFloat("horArrowRaw", 0);
+                    anim.SetFloat("verArrowRaw", 0);
+                }
+                if (Input.GetKey("e"))
+                {
+                    if (bombCooldown <= 0)
+                    {
+                        if (bomb > 0)
+                        {
+                            bombCooldown = 1f;
+                            Instantiate(bombObj[0], transform.position - new Vector3(0, 0.2f, 0), Quaternion.identity);
+                            bomb--;
+                            bombSetCount++;
+                        }
+                    }
+                }
+                if (Input.GetKey("q"))
+                {
+                    if (prop != null)
+                    {
+                        prop.OtherEffect();
                     }
                 }
                 break;
@@ -95,12 +176,19 @@ public class Player : MonoBehaviour
                 }
                 break;
             case ATTACKED:
+                anim.SetFloat("horSpeed", 0);
+                anim.SetFloat("verSpeed", 0);
+                anim.SetFloat("horRaw", 0);
+                anim.SetFloat("verRaw", 0);
                 if (attackCooldown > 0)
                 {
                     GetComponent<Rigidbody2D>().velocity = repelForce;
+                    anim.SetBool("isAttacted", true);
                 }
                 else
+                {
                     SetState(NORMAL);
+                }
                 break;
         }
     }
@@ -108,17 +196,38 @@ public class Player : MonoBehaviour
 	{
         if (other.tag.IndexOf("Door")>=0)
         {
+            GameManager.roomTypeBoard[GameManager.site_x, GameManager.site_y] = -1;
             SceneMove(other);
+            if (GameManager.roomTypeBoard[GameManager.site_x, GameManager.site_y] != -1)
+            {
+                GameManager.instance.CreateRoom();
+            }
+        }
+        else if (immuneTime <= 0)
+        {
+            switch (other.tag)
+            {
+                case "Enemy":
+                    Attacked(GameManager.instance.GetVelocity(other.transform.position, transform.position, 2.5f), (int)other.GetComponent<AI>().collideDamage);
+                    break;
+                case "EnemyWeapon":
+                    Attacked(new Vector2(0, 0), (int)other.GetComponent<Bloodtear>().damage);
+                    break;
+                case "BombExplosion":
+                    Attacked(GameManager.instance.GetVelocity(other.transform.position - new Vector3(0, 0.3f, 0), transform.position, 2.5f), (int)other.GetComponent<BombExplosion>().damage);
+                    break;
+                case "Spike":
+                    Attacked(GetComponent<Rigidbody2D>().velocity/2, 5);
+                    break;
+            }
         }
 	}
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject .tag == "Enemy")
+        if (other.gameObject.tag == "Enemy" && immuneTime <= 0)
         {
-            SetState(ATTACKED);
-            repelForce = GameManager.instance.GetDirectionForce(other.transform.position, transform.position, 2.5f);
-            attackCooldown = 0.3f;
+            Attacked(GameManager.instance.GetVelocity(other.transform.position, transform.position, 2.5f), (int)other.gameObject.GetComponent<AI>().collideDamage);
         }
     }
 
@@ -133,6 +242,7 @@ public class Player : MonoBehaviour
             //主摄像机移动
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y + GameManager.instance.px_y;
+            GameManager.site_x++;
             //小地图摄像机
             GameManager.miniMap.UpdateMap('u');
         }
@@ -141,20 +251,23 @@ public class Player : MonoBehaviour
             transform.Translate(0, -2.6f, 0);
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y - GameManager.instance.px_y;
+            GameManager.site_x--;
             GameManager.miniMap.UpdateMap('d');
         }
         else if (other.tag == "lDoor")
         {
-            transform.Translate(-4.0f, 0, 0);
+            transform.Translate(-4.1f, 0, 0);
             cameraMove.x = cameraView.position.x - GameManager.instance.px_x;
             cameraMove.y = cameraView.position.y;
+            GameManager.site_y--;
             GameManager.miniMap.UpdateMap('l');
         }
         else if (other.tag == "rDoor")
         {
-            transform.Translate(4.0f, 0, 0);
+            transform.Translate(4.1f, 0, 0);
             cameraMove.x = cameraView.position.x + GameManager.instance.px_x;
             cameraMove.y = cameraView.position.y;
+            GameManager.site_y++;
             GameManager.miniMap.UpdateMap('r');
         }
         SetState(MOVECAMERA);
@@ -163,8 +276,18 @@ public class Player : MonoBehaviour
     //攻击
     public void Attack()
     {
-        Instantiate(weapon, transform.position, Quaternion.identity);
-        GameManager.instance.PropEffectClearing();
+        Vector3 position = transform.position;
+   //     position.y += Random.Range(-0.1f, 0.15f);
+        Instantiate(weapon, position, Quaternion.identity);
+    }
+
+    public void Attacked(Vector3 force, int damaged)
+    {
+        HP -= damaged;
+        SetState(ATTACKED);
+        repelForce = force;
+        attackCooldown = 0.3f;
+        immuneTime = 1f;
     }
     private void SetState(string state)
     {

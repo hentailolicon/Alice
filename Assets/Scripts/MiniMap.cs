@@ -6,49 +6,62 @@ public class MiniMap : MonoBehaviour
 {
     public GameObject[] img;                 //小地图相关图片
     private GameObject playSite;             //玩家当前位置图片
-    private Transform cameraView;            // mini地图视角transform
+    private Transform cameraView;            //mini地图视角transform
     private Vector2 cameraMove;              //摄像机将要移动到的坐标
+    private Transform bgView;                //mini地图背景transform
+    private bool isMove = false;             //摄像机是否在移动
 	// Use this for initialization
 
     //小地图初始化，mapBoard的值有1,2,3三种，1为初始值，代表此处存在房间；2代表此房间未被探索；3代表此房间已被探索。
 	public void Init ()
     {
         cameraView = GameObject.FindGameObjectWithTag("MiniMap").transform;     //获得mini地图摄像机transform
-        cameraMove = new Vector2(0, GameManager.site_x * GameManager.instance.mini_y);
+        cameraMove = new Vector2(GameManager.site_y * GameManager.instance.mini_x, GameManager.site_x * GameManager.instance.mini_y);
         cameraView.position = cameraMove;
+        bgView = GameObject.FindGameObjectWithTag("MiniBG").transform;
+        bgView.position = new Vector3(cameraView.position.x, cameraView.position.y, 10f);
         playSite = Instantiate(img[2], new Vector3(0, 0, 8f), Quaternion.identity) as GameObject;  //实例化玩家当前所在房间的图片
         GameManager.mapBoard[GameManager.site_x, GameManager.site_y] = 2;              //设置玩家所在房间为2，即此房间已被探索过
         UpdateImg();
 	}
+
+    void Update()
+    {
+        if(isMove)
+        {
+            CameraFollow.TrackPlayer(cameraView, cameraMove);
+            bgView.position = new Vector3(cameraView.position.x, cameraView.position.y, 10f);
+            if ((Mathf.Abs(cameraMove.x - cameraView.position.x) < 0.01f) && (Mathf.Abs(cameraMove.y - cameraView.position.y) < 0.01f))
+            {
+                isMove = false;
+            }
+        }
+    }
 
     //更新小地图，包括逻辑，图片和镜头位置
     public void UpdateMap(char direction)
     {
         if(direction == 'u')
         {
-            GameManager.site_x++;
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y + GameManager.instance.mini_y;
         }
         else if (direction == 'd')
         {
-            GameManager.site_x--;
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y - GameManager.instance.mini_y;
         }
         else if (direction == 'l')
         {
-            GameManager.site_y--;
             cameraMove.x = cameraView.position.x - GameManager.instance.mini_x;
             cameraMove.y = cameraView.position.y;
         }
         else if (direction == 'r')
         {
-            GameManager.site_y++;
             cameraMove.x = cameraView.position.x + GameManager.instance.mini_x;
             cameraMove.y = cameraView.position.y;
         }
-        CameraFollow.TrackPlayer(cameraView, cameraMove);
+        isMove = true;
         UpdateImg();
     }
 

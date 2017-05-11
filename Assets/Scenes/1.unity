@@ -781,7 +781,7 @@ MonoBehaviour:
   - {fileID: 171606, guid: 323ca1c9bdbad734dbe2a8e2cb0d6f5f, type: 2}
   - {fileID: 109730, guid: 6440fccca769854468c0928dad1408b6, type: 2}
   - {fileID: 144092, guid: f4e0ab2aba352fb4f968c93cf7d24ae9, type: 2}
-  - {fileID: 155272, guid: ab09e09900eb41a4d881dd0b3ed4ffb5, type: 2}
+  - {fileID: 111142, guid: 7cf36711a7cff994983f5253fdafff9f, type: 2}
   poof:
   - {fileID: 172264, guid: c31177e1cd110344b9e514be58be63d4, type: 2}
   - {fileID: 137074, guid: 7eb252120a13e9247b085dd12fb3eb88, type: 2}
@@ -840,6 +840,10 @@ MonoBehaviour:
   poop:
   - {fileID: 109352, guid: 18308c60c4e587f4997b8e93ca8d4913, type: 2}
   - {fileID: 162222, guid: a72fca6156c9648459748c4df4e869b0, type: 2}
+  priceUI:
+  - {fileID: 121684, guid: 391182302ed3550469140244231c3723, type: 2}
+  - {fileID: 178808, guid: d3914c2f4e492174993f8131f82059a1, type: 2}
+  - {fileID: 101190, guid: f30c02928ec502a4fa1757ac0f7635cd, type: 2}
 --- !u!114 &886829024
 MonoBehaviour:
   m_ObjectHideFlags: 0

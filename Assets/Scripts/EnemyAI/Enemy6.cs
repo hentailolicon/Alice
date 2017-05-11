@@ -19,7 +19,7 @@ public class Enemy6 : AI {
     void FixedUpdate()
     {
 
-        float distance = Mathf.Pow(transform.position.x - player.position.x, 2) + Mathf.Pow(transform.position.x - player.position.x, 2);
+        float distance = Mathf.Pow(transform.position.x - player.position.x, 2) + Mathf.Pow(transform.position.y - player.position.y, 2);
         if (distance < range)
         {
             anim.SetBool("isAttact", true);

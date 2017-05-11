@@ -14,6 +14,14 @@ public class Prop : MonoBehaviour
     //应用道具随机或者比例数值效果
     public virtual void OtherEffect() { }
 
+    void Awake()
+    {
+        if (GameManager.roomTypeBoard[GameManager.site_x, GameManager.site_y] == 100)
+        {
+            GetComponent<Collider2D>().isTrigger = true;
+        }
+    }
+
     public void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.tag == "Player")
@@ -28,6 +36,10 @@ public class Prop : MonoBehaviour
         {
             GetComponent<Rigidbody2D>().velocity = GameManager.instance.GetVelocity(other.transform.position - new Vector3(0, 0.3f, 0), transform.position, 2.5f);
         }
+        else if (other.tag == "Player")
+        {
+            Trade();
+        }
     }
 
     public void OneTimePropActive()
@@ -41,6 +53,33 @@ public class Prop : MonoBehaviour
             img.sprite = GetComponent<SpriteRenderer>().sprite;
             Text text = GameObject.Find("PropText").GetComponent<Text>();
             text.text = propName + "\t—";
+        }
+    }
+
+    void Trade()
+    {
+        int coin = (int)GameManager.instance.GetPlayerAttributeValue(GameManager.PlayerAttribute.COIN);
+        if(propName == "Heart")
+        {
+            UpdateCoin(coin, 3);
+        }
+        else if (propName == "Bomb")
+        {
+            UpdateCoin(coin, 5);
+        }
+        else
+        {
+            UpdateCoin(coin, 15);
+        }
+    }
+
+    void UpdateCoin(int coin, int val)
+    {
+        if (coin >= val)
+        {
+            GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.COIN, -val);
+            GetComponent<Collider2D>().isTrigger = false;
+            Active();
         }
     }
 }

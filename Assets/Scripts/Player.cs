@@ -185,6 +185,8 @@ public class Player : MonoBehaviour
                 anim.SetFloat("verSpeed", 0);
                 anim.SetFloat("horRaw", 0);
                 anim.SetFloat("verRaw", 0);
+                anim.SetFloat("horArrowRaw", 0);
+                anim.SetFloat("verArrowRaw", 0);
                 if (attackCooldown > 0)
                 {
                     GetComponent<Rigidbody2D>().velocity = repelForce;

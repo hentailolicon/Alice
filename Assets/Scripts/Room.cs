@@ -8,8 +8,9 @@ public class Room : MonoBehaviour {
     public GameObject[] spike;
     public GameObject[] enemy;
     public GameObject[] poop;
+    public GameObject[] priceUI;
     public int[,] room;
-    public static int roomTypeNum = Directory.GetFileSystemEntries("Assets/Room", "*.txt").Length;
+    public static int roomTypeNum = Directory.GetFileSystemEntries("Assets/Room", "*.txt").Length - 2;
 
 	void Start () {
 
@@ -24,7 +25,7 @@ public class Room : MonoBehaviour {
     {
         if (roomType != -1)
         {
-            StreamReader rd = File.OpenText("Assets/Room/Room99"/* + roomType*/ + ".txt");
+            StreamReader rd = File.OpenText("Assets/Room/Room" + roomType + ".txt");
             string firstLine = rd.ReadLine();
             string[] val = firstLine.Split(',');
 
@@ -71,6 +72,9 @@ public class Room : MonoBehaviour {
                             break;
                         case 9:
                             GameManager.instance.CreateProp(subclass+2, new Vector3(roomSite_x - deviation_x + j * pane, roomSite_y - deviation_y + i * pane, 9f));
+                            break;
+                        case 10:
+                            Instantiate(priceUI[subclass], new Vector3(roomSite_x - deviation_x + j * pane, roomSite_y - deviation_y + i * pane, 9f), Quaternion.identity);
                             break;
                     }
                 }

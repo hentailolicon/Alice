@@ -71,7 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c24aad462eb401468d993d939171873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  propName: 
+  propName: Bomb
   effect: 
   num: 1
   kind: bomb
@@ -115,6 +115,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: kind
       value: bomb
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: propName
+      value: Bomb
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

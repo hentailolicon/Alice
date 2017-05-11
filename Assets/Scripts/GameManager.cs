@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     public static int enemyCount = 0;                       //房间敌人计数
     public static MiniMap miniMap;
 
-    public List<Prop> props;                                //道具效果列表
+    public List<Prop> props = new List<Prop>();             //道具效果列表
     public PlayerAttributeValue PAV;                        //记录所有效果结算后的玩家各项数值
 
     private System.Random rand = new System.Random();
@@ -237,7 +237,7 @@ public class GameManager : MonoBehaviour
                 Instantiate(propObj[rand.Next(propObj.Length)], pos, Quaternion.identity);
                 break;
             case 1:
-                Instantiate(propObj[rand.Next(2, propObj.Length)], pos, Quaternion.identity);
+                Instantiate(propObj[rand.Next(3, propObj.Length)], pos, Quaternion.identity);
                 break;
             case 2:
                 Instantiate(propObj[0], pos, Quaternion.identity);
@@ -246,7 +246,7 @@ public class GameManager : MonoBehaviour
                 Instantiate(propObj[1], pos, Quaternion.identity);
                 break;
             case 4:
-                Instantiate(propObj[3], pos, Quaternion.identity);
+                Instantiate(propObj[2], pos, Quaternion.identity);
                 break;
         }
     }
@@ -277,11 +277,15 @@ public class GameManager : MonoBehaviour
                 {
                     return false;
                 }
-                HPText.text = player.HP + "/" + player.HPMax;
-                HPImg.fillAmount = (float)player.HP / player.HPMax;
                 if(player.HP<=0)
                 {
-
+                    HPText.text = "0/" + player.HPMax;
+                    HPImg.fillAmount = 0;
+                }
+                else
+                {
+                    HPText.text = player.HP + "/" + player.HPMax;
+                    HPImg.fillAmount = (float)player.HP / player.HPMax;
                 }
                 break;
             case PlayerAttribute.HPMax:
@@ -290,13 +294,14 @@ public class GameManager : MonoBehaviour
                 {
                     player.HP = player.HPMax;
                 }
-                HPText.text = player.HP + "/" + player.HPMax;
                 if(player.HPMax<=0)
                 {
-
+                    HPText.text = "0/0";
+                    HPImg.fillAmount = 0;
                 }
                 else
                 {
+                    HPText.text = player.HP + "/" + player.HPMax;
                     HPImg.fillAmount = (float)player.HP / player.HPMax;
                 }
                 break;

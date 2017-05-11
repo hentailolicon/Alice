@@ -71,7 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c24aad462eb401468d993d939171873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  propName: 
+  propName: Heart
   effect: 
   num: 20
   kind: HP
@@ -107,7 +107,11 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: propName
+      value: Heart
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 144092}

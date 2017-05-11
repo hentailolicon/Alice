@@ -11,11 +11,7 @@ public class BoomX10 : Prop {
 
     public override void Active()
     {
-        if (GameManager.instance.GetPlayerProp() == null)
-        {
-            gameObject.SetActive(false);
-            GameManager.instance.SetPlayerProp(this);
-        }
+        OneTimePropActive();
     }
 
     public override void OtherEffect()

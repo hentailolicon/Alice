@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using Random = UnityEngine.Random;
 using Alice;
@@ -146,7 +147,7 @@ public class Player : MonoBehaviour
                         {
                             bombCooldown = 1f;
                             Instantiate(bombObj[0], transform.position - new Vector3(0, 0.2f, 0), Quaternion.identity);
-                            bomb--;
+                            GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.BOMB, -1);
                             bombSetCount++;
                         }
                     }
@@ -156,6 +157,10 @@ public class Player : MonoBehaviour
                     if (prop != null)
                     {
                         prop.OtherEffect();
+                        Image img = GameObject.Find("PropImage").GetComponent<Image>();
+                        img.sprite = null;
+                        img.enabled = false;
+                        GameObject.Find("PropText").GetComponent<Text>().text = null;
                     }
                 }
                 break;
@@ -283,7 +288,7 @@ public class Player : MonoBehaviour
 
     public void Attacked(Vector3 force, int damaged)
     {
-        HP -= damaged;
+        GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.HP, -damaged);
         SetState(ATTACKED);
         repelForce = force;
         attackCooldown = 0.3f;

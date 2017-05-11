@@ -76,6 +76,7 @@ MonoBehaviour:
   HP: 500
   collideDamage: 5
   bloodtear: {fileID: 101614, guid: 7e711d2322e2df44897bada4a718bf42, type: 2}
+  isBoss: 1
   thankTime: 0
   walkTime: 0
   state: normal
@@ -144,6 +145,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: HP
       value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: isBoss
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

@@ -12,13 +12,13 @@ public class BaseProp : Prop {
         switch (kind)
         {
             case "bomb":
-                GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.BOMB, num);
+                flag = GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.BOMB, num);
                 break;
             case "HP":
                 flag = GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.HP, num);
                 break;
             case "coin":
-                GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.COIN, num);
+                flag = GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.COIN, num);
                 break;
         }
         if (flag)

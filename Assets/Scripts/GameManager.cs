@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Alice;
@@ -42,6 +43,11 @@ public class GameManager : MonoBehaviour
     private List<GameObject> doors = new List<GameObject>();
     private Player player;
 
+    private Text HPText;
+    private Text coinText;
+    private Text bombText;
+    private Image HPImg;
+
     // Use this for initialization
 	void Awake()
     {
@@ -80,6 +86,18 @@ public class GameManager : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         PAV = new PlayerAttributeValue();
+
+        GameObject.Find("BossHealthBar").GetComponent<Image>().enabled = false;
+        GameObject.Find("BossHealthBar_bg").GetComponent<Image>().enabled = false;
+        GameObject.Find("PropImage").GetComponent<Image>().enabled = false;
+
+        HPImg = GameObject.Find("HPBar").GetComponent<Image>();
+        HPText = GameObject.Find("HPText").GetComponent<Text>();
+        HPText.text = player.HP + "/" + player.HPMax;
+        coinText = GameObject.Find("CoinText").GetComponent<Text>();
+        coinText.text = player.coin.ToString("d2");
+        bombText = GameObject.Find("BombText").GetComponent<Text>();
+        bombText.text = player.bomb.ToString("d2");
 	}
 	
 	// Update is called once per frame
@@ -255,15 +273,12 @@ public class GameManager : MonoBehaviour
         switch (attribute)
         {
             case PlayerAttribute.HP:
-                if (player.HP == player.HPMax)
+                if (!AttrUpdateInMax(ref player.HP, player.HPMax, value))
                 {
                     return false;
                 }
-                player.HP += value;
-                if(player.HP>player.HPMax)
-                {
-                    player.HP = player.HPMax;
-                }
+                HPText.text = player.HP + "/" + player.HPMax;
+                HPImg.fillAmount = (float)player.HP / player.HPMax;
                 if(player.HP<=0)
                 {
 
@@ -275,9 +290,14 @@ public class GameManager : MonoBehaviour
                 {
                     player.HP = player.HPMax;
                 }
+                HPText.text = player.HP + "/" + player.HPMax;
                 if(player.HPMax<=0)
                 {
 
+                }
+                else
+                {
+                    HPImg.fillAmount = (float)player.HP / player.HPMax;
                 }
                 break;
             case PlayerAttribute.LUCK:
@@ -287,11 +307,33 @@ public class GameManager : MonoBehaviour
                 player.speed += value;
                 break;
             case PlayerAttribute.BOMB:
-                player.bomb += value;
+                if (!AttrUpdateInMax(ref player.bomb, 99, value))
+                {
+                    return false;
+                }
+                bombText.text = player.bomb.ToString("d2");
                 break;
             case PlayerAttribute.COIN:
-                player.coin += value;
+                if (!AttrUpdateInMax(ref player.coin, 99, value))
+                {
+                    return false;
+                }
+                coinText.text = player.coin.ToString("d2");
                 break;
+        }
+        return true;
+    }
+
+    private bool AttrUpdateInMax(ref int attr, int max, int val)
+    {
+        if (attr == max && val > 0)
+        {
+            return false;
+        }
+        attr += val;
+        if (attr > max)
+        {
+            attr = max;
         }
         return true;
     }

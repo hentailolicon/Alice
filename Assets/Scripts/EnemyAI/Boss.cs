@@ -166,4 +166,5 @@ public class Boss : AI
             tear[i].GetComponent<Rigidbody2D>().velocity = new Vector2(GetRandomForce(1.5f, 4f), GetRandomForce(1.5f, 4f));
         }
     }
+
 }

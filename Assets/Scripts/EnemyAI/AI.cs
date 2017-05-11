@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using Alice;
 using System.Reflection;
@@ -12,7 +13,12 @@ public class AI : MonoBehaviour
     public float HP = 50f;
     public float collideDamage = 10f;
     public GameObject bloodtear;
+    public bool isBoss = false;
     protected Transform player;
+
+    private Image healthBar;
+    private Image healthBar_bg;
+    private float hptmp;
 
     //敌人状态 普通状态 追击主角状态 攻击主角状态
     public const string NORMAL = "normal";
@@ -34,6 +40,17 @@ public class AI : MonoBehaviour
         thankTime = Time.time;
         walkTime = Time.time;
         state = NORMAL;
+        if(isBoss)
+        {
+            healthBar = GameObject.Find("BossHealthBar").GetComponent<Image>();
+            healthBar.enabled = true;
+            healthBar.rectTransform.localPosition = new Vector3(0, 200f, 0);
+            healthBar.fillAmount = 0.96f;
+            healthBar_bg = GameObject.Find("BossHealthBar_bg").GetComponent<Image>();
+            healthBar_bg.enabled = true;
+            healthBar_bg.rectTransform.localPosition = healthBar.rectTransform.localPosition;
+            hptmp = HP;
+        }
     }
 
     public void Update()
@@ -84,9 +101,20 @@ public class AI : MonoBehaviour
     public void Attacked(float damaged, dele func)
     {
         GameManager.instance.PropEffectClearing();
-        HP -= GameManager.instance.PAV.damage * damaged /10;
+        float finaldamage = GameManager.instance.PAV.damage * damaged /10;
+        HP -= finaldamage;
+        if(isBoss)
+        {
+            healthBar.fillAmount -= finaldamage / hptmp * 0.82f;
+        }
         if (HP <= 0)
         {
+            if(isBoss)
+            {
+                healthBar.fillAmount = 1;
+                healthBar.enabled = false;
+                healthBar_bg.enabled = false;
+            }
             if(func != null)
             {
                 func();

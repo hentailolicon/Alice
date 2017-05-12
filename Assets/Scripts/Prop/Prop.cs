@@ -46,6 +46,7 @@ public class Prop : MonoBehaviour
     {
         if (GameManager.instance.GetPlayerProp() == null)
         {
+            ShowPropInfo();
             gameObject.SetActive(false);
             GameManager.instance.SetPlayerProp(this);
             Image img = GameObject.Find("PropImage").GetComponent<Image>();
@@ -54,6 +55,13 @@ public class Prop : MonoBehaviour
             Text text = GameObject.Find("PropText").GetComponent<Text>();
             text.text = propName + "\t—";
         }
+    }
+
+    public void ShowPropInfo()
+    {
+        GameObject.Find("PropNameText").GetComponent<Text>().text = propName;
+        GameObject.Find("EffectText").GetComponent<Text>().text = effect;
+        GameManager.instance.ShowPropInfo();
     }
 
     void Trade()
@@ -82,4 +90,5 @@ public class Prop : MonoBehaviour
             Active();
         }
     }
+
 }

@@ -8,6 +8,9 @@ public class Weapon : MonoBehaviour
     public float range = 4f;                                     //武器射程
     public float attackSpeed = 3f;                               //攻速
 
+    public AudioClip[] audioClip;
+
+    private AudioSource audioSource;
     private float startX;
     private float startY;
     private float force = 0f;
@@ -37,6 +40,9 @@ public class Weapon : MonoBehaviour
         {
             speedVector = new Vector2(speed, 0);
         }
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = audioClip[0];
+        audioSource.Play();
     }
 	
 	// Update is called once per frame
@@ -48,6 +54,8 @@ public class Weapon : MonoBehaviour
             AnimatorStateInfo animatorInfo = GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
             if (animatorInfo.normalizedTime >= 1 && animatorInfo.IsName("Base Layer.Tear_play"))
             {
+                audioSource.clip = audioClip[1];
+                audioSource.Play();
                 Destroy(gameObject);
             }
         }
@@ -85,7 +93,7 @@ public class Weapon : MonoBehaviour
     {
         gameObject.GetComponent<Collider2D>().enabled = false;
         GetComponent<Animator>().SetBool("isPlay", true);
-        isPlay = true;
         GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
+        isPlay = true;
     }
 }

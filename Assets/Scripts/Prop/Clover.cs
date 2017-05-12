@@ -13,6 +13,7 @@ public class Clover:Prop
 
     public override void Active()
     {
+        ShowPropInfo();
         gameObject.SetActive(false);            //设置物品为非激活状态，此状态物品消失但对象还存在。
         GameManager.instance.UpdatePlayerAttributeValue(GameManager.PlayerAttribute.LUCK, 2);
         if (!GameManager.instance.props.Exists(p => p.propName == propName))

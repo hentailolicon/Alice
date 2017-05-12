@@ -36,10 +36,14 @@ public class GameManager : MonoBehaviour
     public List<Prop> props = new List<Prop>();             //道具效果列表
     public PlayerAttributeValue PAV;                        //记录所有效果结算后的玩家各项数值
 
+    public AudioClip[] doorAudio;
+    public AudioClip[] bgm;
+
     private System.Random rand = new System.Random();
     private Map map;                                        //地图
     private Room room;                                      //房间
     private bool enemyExistFlag = false;                    //敌人存在标志
+    private bool isShowPropInfo = false;
     private List<GameObject> doors = new List<GameObject>();
     private Player player;
 
@@ -47,7 +51,8 @@ public class GameManager : MonoBehaviour
     private Text coinText;
     private Text bombText;
     private Image HPImg;
-
+    private Image streak;
+    private AudioSource audioSource;
     // Use this for initialization
 	void Awake()
     {
@@ -90,6 +95,7 @@ public class GameManager : MonoBehaviour
         GameObject.Find("BossHealthBar").GetComponent<Image>().enabled = false;
         GameObject.Find("BossHealthBar_bg").GetComponent<Image>().enabled = false;
         GameObject.Find("PropImage").GetComponent<Image>().enabled = false;
+        streak = GameObject.Find("Streak").GetComponent<Image>();
 
         HPImg = GameObject.Find("HPBar").GetComponent<Image>();
         HPText = GameObject.Find("HPText").GetComponent<Text>();
@@ -98,6 +104,8 @@ public class GameManager : MonoBehaviour
         coinText.text = player.coin.ToString("d2");
         bombText = GameObject.Find("BombText").GetComponent<Text>();
         bombText.text = player.bomb.ToString("d2");
+
+        audioSource = GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -109,12 +117,51 @@ public class GameManager : MonoBehaviour
             {
                 ShowDoorAnima(false);
                 enemyExistFlag = false;
-                CreateProp(0, new Vector3(site_y * px_x, site_x * px_y, 8.5f));
-                Instantiate(poof[0], new Vector3(site_y * px_x, site_x * px_y, 9f), Quaternion.identity);
+                if ((rand.Next(100) + player.luck) > 50)
+                {
+                    CreateProp(0, new Vector3(site_y * px_x, site_x * px_y, 8.5f));
+                    Instantiate(poof[0], new Vector3(site_y * px_x, site_x * px_y, 9f), Quaternion.identity);
+                }
             }
+        }
+        if(isShowPropInfo)
+        {
+            ShowPropInfo();
         }
 
 	}
+
+    public void ShowPropInfo()
+    {
+        isShowPropInfo = true;
+        Vector3 pos = streak.rectTransform.localPosition;
+        float target = 0f;
+        if (pos.x > -0.1f)
+        {
+            target = 1500f;
+        }
+        float x = Mathf.Lerp(pos.x, target, Time.deltaTime * 8);
+        streak.rectTransform.localPosition = new Vector3(x, pos.y, pos.z);
+        if (pos.x > 1499.9f)
+        {
+            streak.rectTransform.localPosition = new Vector3(-1500, pos.y, pos.z);
+            isShowPropInfo = false;
+        }
+    }
+
+    public void ChangeBGM(bool isBoss)
+    {
+        if(isBoss)
+        {
+            audioSource.clip = bgm[1];
+            audioSource.Play();
+        }
+        else
+        {
+            audioSource.clip = bgm[0];
+            audioSource.Play();
+        }
+    }
 
     //获得某个方向的速率，力的方向为start指向end，最大速率为maxForce
     public Vector3 GetVelocity(Vector3 start, Vector3 end, float maxVelocity)
@@ -208,6 +255,14 @@ public class GameManager : MonoBehaviour
         {
             obj.GetComponent<Animator>().SetBool("isDoorClose", isDoorClose);
             obj.GetComponent<Collider2D>().isTrigger = !isDoorClose;
+        }
+        if (isDoorClose)
+        {
+            AudioSource.PlayClipAtPoint(doorAudio[0], GameObject.FindGameObjectWithTag("MainCamera").transform.position);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(doorAudio[1], GameObject.FindGameObjectWithTag("MainCamera").transform.position);
         }
     }
 

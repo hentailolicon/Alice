@@ -44,12 +44,13 @@ public class AI : MonoBehaviour
         {
             healthBar = GameObject.Find("BossHealthBar").GetComponent<Image>();
             healthBar.enabled = true;
-            healthBar.rectTransform.localPosition = new Vector3(0, 200f, 0);
+            healthBar.rectTransform.localPosition = new Vector3(0, 280f, 0);
             healthBar.fillAmount = 0.96f;
             healthBar_bg = GameObject.Find("BossHealthBar_bg").GetComponent<Image>();
             healthBar_bg.enabled = true;
             healthBar_bg.rectTransform.localPosition = healthBar.rectTransform.localPosition;
             hptmp = HP;
+            GameManager.instance.ChangeBGM(true);
         }
     }
 
@@ -67,6 +68,8 @@ public class AI : MonoBehaviour
     {
         if (other.tag == "PlayerWeapon")
         {
+            //Vector3 tmp = other.GetComponent<Rigidbody2D>().velocity / 20;
+            //gameObject.transform.position += tmp;
             Attacked(other.GetComponent<Weapon>().damage, null);
         }
         else if (other.tag == "BombExplosion")
@@ -114,6 +117,7 @@ public class AI : MonoBehaviour
                 healthBar.fillAmount = 1;
                 healthBar.enabled = false;
                 healthBar_bg.enabled = false;
+                GameManager.instance.ChangeBGM(false);
             }
             if(func != null)
             {

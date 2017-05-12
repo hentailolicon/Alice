@@ -13,7 +13,7 @@ GameObject:
   - 58: {fileID: 5811182}
   - 50: {fileID: 5075150}
   m_Layer: 0
-  m_Name: "\u56DB\u53F6\u8349"
+  m_Name: Clover
   m_TagString: Prop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,7 +59,7 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: .159999996
+  m_Radius: .340352774
 --- !u!114 &11442672
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -97,7 +97,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ce3e4e0b45b9b8847aab5f311180ace6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5e2518c640da2774182392831a4875bc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &100100000
 Prefab:
@@ -122,6 +122,11 @@ Prefab:
       propertyPath: m_LinearDrag
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5e2518c640da2774182392831a4875bc,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 198900}

@@ -11,7 +11,6 @@ public class Room : MonoBehaviour {
     public GameObject[] priceUI;
     public int[,] room;
     public static int roomTypeNum = Directory.GetFileSystemEntries("Assets/Room", "*.txt").Length - 2;
-
 	void Start () {
 
 	}

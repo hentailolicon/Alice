@@ -28,7 +28,7 @@ public class AI : MonoBehaviour
     public const string SlOWDOWN = "slowdown";
     public const string WALK = "walk";
 
-    public float thankTime;                                  //记录敌人上一次思考时间
+    public float thinkTime;                                  //记录敌人上一次思考时间
     public float walkTime;
     public string state;
     public Vector3 target;
@@ -37,7 +37,7 @@ public class AI : MonoBehaviour
     public void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        thankTime = Time.time;
+        thinkTime = Time.time;
         walkTime = Time.time;
         state = NORMAL;
         if(isBoss)

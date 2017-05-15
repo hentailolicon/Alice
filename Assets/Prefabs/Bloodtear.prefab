@@ -58,7 +58,7 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: .200000003}
   serializedVersion: 2
   m_Radius: .120748281
 --- !u!95 &9570014
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   damage: 10
-  range: 7
+  range: 4
 --- !u!212 &21205724
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -141,6 +141,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: range
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Offset.y
+      value: .200000003
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

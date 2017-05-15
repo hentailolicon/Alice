@@ -13,17 +13,19 @@ public class Enemy7 : AI
 
     public new void Update()
     {
-        if (Time.time - thankTime>= 1.5f)
+        if (Time.time - thinkTime>= 1.5f)
         {
-            thankTime = Time.time;
+            thinkTime = Time.time;
             target = player.position;
            // float distance = Mathf.Pow(transform.position.x - player.position.x, 2) + Mathf.Pow(transform.position.y - player.position.y, 2);
             if (Random.Range(0,100) < 20)
             {
+                GetComponent<Collider2D>().isTrigger = true;
                 SetState(ATTACK);
             }
             else
             {
+                GetComponent<Collider2D>().isTrigger = false;
                 walkTime = Time.time;
                 RandomWalk(0.5f, 1f, 2f);
             }
@@ -40,7 +42,7 @@ public class Enemy7 : AI
                 {
                     SetState(NORMAL);
                 }
-                if (Time.time - thankTime>= 0.5f)
+                if (Time.time - thinkTime>= 0.5f)
                 {
                     SetState(NORMAL);
                 }
@@ -53,9 +55,19 @@ public class Enemy7 : AI
                 SlowDown();
                 break;
             case NORMAL:
+                GetComponent<Collider2D>().isTrigger = false;
                 gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
                 anim.SetInteger("state", 0);
                 break;
+        }
+    }
+
+    public new void OnTriggerEnter2D(Collider2D other)
+    {
+        base.OnTriggerEnter2D(other);
+        if (other.tag == "Player")
+        {
+            SetState(SlOWDOWN);
         }
     }
 }

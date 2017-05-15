@@ -17,9 +17,9 @@ public class Enemy4 : AI {
     {
         anim.SetFloat("positionSub", player.position.x - transform.position.x);
         RandomWalk(1f, 0.5f, 0.8f);
-        if (Time.time - thankTime >= Random.Range(2f,3f))
+        if (Time.time - thinkTime >= Random.Range(2f,3f))
         {
-            thankTime = Time.time;
+            thinkTime = Time.time;
             Shoot(tearSpeed);
         }
     }

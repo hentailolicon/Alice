@@ -4,19 +4,23 @@ using Random = UnityEngine.Random;
 
 public class Boss : AI
 {
+    private Animator anim;
     public new void Start()
     {
         base.Start();
         moveSpeed = 5;
-        tearSpeed = bloodtear.GetComponent<Bloodtear>().speed;
+        Bloodtear tear = bloodtear.GetComponent<Bloodtear>();
+        tearSpeed = tear.speed;
+        tear.range = 7;
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     public new void Update()
     {
-        if (Time.time - thankTime >= 2.0f && state == NORMAL)
+        if (Time.time - thinkTime >= 2.0f && state == NORMAL)
         {
-            thankTime = Time.time;
+            thinkTime = Time.time;
             ChooseMoveWay();
             if (state == WALK)
             {
@@ -34,7 +38,7 @@ public class Boss : AI
                 break;
             case CHASE:
                 collideDamage = 15f;
-                if (Time.time - thankTime >= 1f)
+                if (Time.time - thinkTime >= 1f)
                 {
                     SetState(SlOWDOWN);
                 }
@@ -47,7 +51,17 @@ public class Boss : AI
                 SlowDown();
                 break;
             case NORMAL:
+                anim.SetInteger("state", 0);
                 collideDamage = 10f;
+                break;
+            case THINK:
+                collideDamage = 10f;
+                AnimatorStateInfo animatorInfo = GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
+                if (animatorInfo.normalizedTime >= 1 && animatorInfo.IsName("Base Layer.Boss_summon"))
+                {
+                    GameManager.instance.CreateEnemy(GameManager.instance.GetComponent<Room>().enemy[3], transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0));
+                    SetState(NORMAL);
+                }
                 break;
         }
     }
@@ -59,7 +73,8 @@ public class Boss : AI
         {
             if (GameManager.enemyCount <= 3)
             {
-                GameManager.instance.CreateEnemy(GameManager.instance.GetComponent<Room>().enemy[3], transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0));
+                anim.SetInteger("state", 1);
+                SetState(THINK);
             }
             else
             {
@@ -76,6 +91,14 @@ public class Boss : AI
         {
             SetState(CHASE);
             target = GameManager.instance.GetVelocity(transform.position, player.position, moveSpeed * 2);
+            if(target.x<0)
+            {
+                anim.SetInteger("state", 2);
+            }
+            else
+            {
+                anim.SetInteger("state", 3);
+            }
             RunTowards();
         }
     }

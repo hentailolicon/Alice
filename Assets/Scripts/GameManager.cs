@@ -128,7 +128,6 @@ public class GameManager : MonoBehaviour
         {
             ShowPropInfo();
         }
-
 	}
 
     public void ShowPropInfo()

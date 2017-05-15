@@ -221,7 +221,7 @@ public class Player : MonoBehaviour
                     Attacked(new Vector2(0, 0), (int)other.GetComponent<Bloodtear>().damage);
                     break;
                 case "BombExplosion":
-                    Attacked(GameManager.instance.GetVelocity(other.transform.position - new Vector3(0, 0.3f, 0), transform.position, 2.5f), (int)other.GetComponent<BombExplosion>().damage);
+                    Attacked(GameManager.instance.GetVelocity(other.transform.position - new Vector3(0, 0.3f, 0), transform.position, 2.5f), (int)other.GetComponent<BombExplosion>().damage / 2);
                     break;
                 case "Spike":
                     Attacked(GetComponent<Rigidbody2D>().velocity/2, 5);
@@ -245,7 +245,7 @@ public class Player : MonoBehaviour
         if (other.tag == "uDoor")
         {
             //玩家移动
-            transform.Translate(0, 2.6f, 0);
+            transform.Translate(0, 2.7f, 0);
             //主摄像机移动
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y + GameManager.instance.px_y;
@@ -255,7 +255,7 @@ public class Player : MonoBehaviour
         }
         else if (other.tag == "dDoor")
         {
-            transform.Translate(0, -2.6f, 0);
+            transform.Translate(0, -2.7f, 0);
             cameraMove.x = cameraView.position.x;
             cameraMove.y = cameraView.position.y - GameManager.instance.px_y;
             GameManager.site_x--;
@@ -263,7 +263,7 @@ public class Player : MonoBehaviour
         }
         else if (other.tag == "lDoor")
         {
-            transform.Translate(-4.1f, 0, 0);
+            transform.Translate(-4.2f, 0, 0);
             cameraMove.x = cameraView.position.x - GameManager.instance.px_x;
             cameraMove.y = cameraView.position.y;
             GameManager.site_y--;
@@ -271,7 +271,7 @@ public class Player : MonoBehaviour
         }
         else if (other.tag == "rDoor")
         {
-            transform.Translate(4.1f, 0, 0);
+            transform.Translate(4.2f, 0, 0);
             cameraMove.x = cameraView.position.x + GameManager.instance.px_x;
             cameraMove.y = cameraView.position.y;
             GameManager.site_y++;

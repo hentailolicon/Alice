@@ -18,14 +18,12 @@ public class Enemy6 : AI {
 
     void FixedUpdate()
     {
-
-        float distance = Mathf.Pow(transform.position.x - player.position.x, 2) + Mathf.Pow(transform.position.y - player.position.y, 2);
-        if (distance < range)
+        if (Vector2.SqrMagnitude(transform.position - player.position) < range)
         {
             anim.SetBool("isAttact", true);
-            if (Time.time - thankTime >= 2f)
+            if (Time.time - thinkTime >= 2f)
             {
-                thankTime = Time.time;
+                thinkTime = Time.time;
                 Shoot(tearSpeed);
             }
         }

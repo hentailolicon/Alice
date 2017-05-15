@@ -24,7 +24,7 @@ public class Room : MonoBehaviour {
     {
         if (roomType != -1)
         {
-            StreamReader rd = File.OpenText("Assets/Room/Room" + roomType + ".txt");
+            StreamReader rd = File.OpenText("Assets/Room/Room99"/* + roomType*/ + ".txt");
             string firstLine = rd.ReadLine();
             string[] val = firstLine.Split(',');
 

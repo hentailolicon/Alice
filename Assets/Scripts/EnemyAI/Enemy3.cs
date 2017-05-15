@@ -14,9 +14,9 @@ public class Enemy3 : AI
     // Update is called once per frame
     public new void Update()
     {
-        if (Time.time - thankTime >= 3.0f)
+        if (Time.time - thinkTime >= 3.0f)
         {
-            thankTime = Time.time;
+            thinkTime = Time.time;
             target = GameManager.instance.GetVelocity(transform.position, player.position, moveSpeed) * 1.2f;
             SetState(CHASE);
         }
@@ -29,7 +29,7 @@ public class Enemy3 : AI
                 collideDamage = 15f;
                 anim.SetInteger("state", 2);
                 RunTowards();
-                if (Time.time - thankTime >= 1f)
+                if (Time.time - thinkTime >= 1f)
                 {
                     SetState(SlOWDOWN);
                 }
@@ -40,7 +40,7 @@ public class Enemy3 : AI
             case NORMAL:
                 collideDamage = 5f;
                 GetComponent<Rigidbody2D>().Sleep();
-                if (Time.time - thankTime >= 2.5f)
+                if (Time.time - thinkTime >= 2.5f)
                 {
                     anim.SetInteger("state", 1);
                 }

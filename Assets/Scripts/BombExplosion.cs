@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BombExplosion : MonoBehaviour {
 
-    public float damage = 20f;
+    public float damage = 50f;
 	// Use this for initialization
 	void Start () {
 	

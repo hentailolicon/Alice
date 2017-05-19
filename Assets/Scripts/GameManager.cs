@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
     private bool isShowPropInfo = false;
     private bool isGameEnd = false;
     private bool isPause = false;
+    private bool isClear = false;
     private float effectTime = -1f;
     private float effectTimeRecord;
     private int pauseEnd = 0;
@@ -136,6 +137,11 @@ public class GameManager : MonoBehaviour
             {
                 ShowDoorAnima(false);
                 enemyExistFlag = false;
+                if (roomTypeBoard[site_x, site_y] == 99)
+                {
+                    isClear = true;
+                    GameEnd(true);
+                }
                 if ((rand.Next(100) + player.luck) > 50)
                 {
                     CreateProp(0, new Vector3(site_y * px_x, site_x * px_y, 8.5f));
@@ -159,7 +165,7 @@ public class GameManager : MonoBehaviour
         }
         if(isGameEnd)
         {
-            GameEnd();
+            GameEnd(isClear);
             if(Input.GetKey(KeyCode.Space))
             {
                 Application.LoadLevel("1");
@@ -237,12 +243,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void GameEnd()
+    public void GameEnd(bool isClear)
     {
         isGameEnd = true;
         Image exit = GameObject.Find("Exit").GetComponent<Image>();
         Image restart = GameObject.Find("Restart").GetComponent<Image>();
         Image gameEnd = GameObject.Find("GameEnd").GetComponent<Image>();
+        if (isClear)
+        {
+            gameEnd = GameObject.Find("Clear").GetComponent<Image>();
+        }
         MoveImg(exit.rectTransform, -290f);
         MoveImg(restart.rectTransform, -290f);
         MoveImg(gameEnd.rectTransform, 0f);
@@ -451,7 +461,7 @@ public class GameManager : MonoBehaviour
                 {
                     HPText.text = "0/" + player.HPMax;
                     HPImg.fillAmount = 0;
-                    GameEnd();
+                    GameEnd(false);
                 }
                 else
                 {
@@ -469,7 +479,7 @@ public class GameManager : MonoBehaviour
                 {
                     HPText.text = "0/0";
                     HPImg.fillAmount = 0;
-                    GameEnd();
+                    GameEnd(false);
                 }
                 else
                 {

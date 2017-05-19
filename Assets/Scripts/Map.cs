@@ -19,6 +19,7 @@ public class Map : MonoBehaviour
 
     public GameObject background;             //背景图片
     public GameObject[] door;                //门的图片
+    public GameObject[] bossdoor;
 
     public int[,] mapBoard { get; private set; }
     public int[,] roomTypeBoard { get; private set; }
@@ -118,7 +119,13 @@ public class Map : MonoBehaviour
     private void CreateBossRoom()
     {
         int index = rand.Next(specialRooms.Count);
-        roomTypeBoard[specialRooms[index].x, specialRooms[index].y] = 99;
+        int i = specialRooms[index].x;
+        int j = specialRooms[index].y;
+        roomTypeBoard[i, j] = 99;
+        Instantiate(bossdoor[0], new Vector3(j * GameManager.instance.px_x, (i-1) * GameManager.instance.px_y + 2.9f, 8.9f), Quaternion.identity);
+        Instantiate(bossdoor[1], new Vector3(j * GameManager.instance.px_x, (i+1) * GameManager.instance.px_y - 2.9f, 8.9f), Quaternion.identity);
+        Instantiate(bossdoor[2], new Vector3((j+1) * GameManager.instance.px_x - 5.0f, i * GameManager.instance.px_y, 8.9f), Quaternion.identity);
+        Instantiate(bossdoor[3], new Vector3((j-1) * GameManager.instance.px_x + 5.0f, i * GameManager.instance.px_y, 8.9f), Quaternion.identity);
         specialRooms.RemoveAt(index);
     }
 

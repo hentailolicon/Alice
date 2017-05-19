@@ -38,7 +38,7 @@ public class Enemy3 : AI
                 SlowDown();
                 break;
             case NORMAL:
-                collideDamage = 5f;
+                collideDamage = 10f;
                 GetComponent<Rigidbody2D>().Sleep();
                 if (Time.time - thinkTime >= 2.5f)
                 {

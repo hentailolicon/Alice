@@ -183,8 +183,8 @@ public class AI : MonoBehaviour
         {
             float speed_x = GetRandomForce(minSpeed, maxSpeed);
             float speed_y = GetRandomForce(minSpeed, maxSpeed);
-            float siteSub_x = transform.position.x % GameManager.instance.px_x;
-            float siteSub_y = transform.position.y % GameManager.instance.px_y;
+            float siteSub_x = (transform.position.x + GameManager.instance.px_x) % GameManager.instance.px_x;
+            float siteSub_y = (transform.position.y + GameManager.instance.px_y) % GameManager.instance.px_y;
             if (siteSub_x > 8 && siteSub_x < 9)
             {
                 speed_x = Mathf.Abs(speed_x);

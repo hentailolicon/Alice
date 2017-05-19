@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     public float pane = 0.7f;                               //房间里每个矩形格子的边长
     public GameObject[] propObj;                            //道具object
     public GameObject[] poof;                               //特效
+    public GameObject effectImage;
     public static int[,] roomTypeBoard;                     //房间类型矩阵
     public static int[,] mapBoard;                          //地图逻辑矩阵
     public static int site_x;                               //玩家逻辑行坐标
@@ -44,12 +45,21 @@ public class GameManager : MonoBehaviour
     private Room room;                                      //房间
     private bool enemyExistFlag = false;                    //敌人存在标志
     private bool isShowPropInfo = false;
+    private bool isGameEnd = false;
+    private bool isPause = false;
+    private float effectTime = -1f;
+    private float effectTimeRecord;
+    private int pauseEnd = 0;
+    private int pauseArrowIndex = -1;
     private List<GameObject> doors = new List<GameObject>();
     private Player player;
 
     private Text HPText;
     private Text coinText;
     private Text bombText;
+    private Text attackText;
+    private Text MSText;
+    private Text LuckText;
     private Image HPImg;
     private Image streak;
     private AudioSource audioSource;
@@ -73,6 +83,7 @@ public class GameManager : MonoBehaviour
 
     private void Init() 
     {
+        enemyCount = 0;
         map.CreateMap();
         mapBoard = map.mapBoard;
         roomTypeBoard = map.roomTypeBoard;
@@ -95,6 +106,8 @@ public class GameManager : MonoBehaviour
         GameObject.Find("BossHealthBar").GetComponent<Image>().enabled = false;
         GameObject.Find("BossHealthBar_bg").GetComponent<Image>().enabled = false;
         GameObject.Find("PropImage").GetComponent<Image>().enabled = false;
+        effectImage = GameObject.Find("EffectImage");
+        effectImage.SetActive(false);
         streak = GameObject.Find("Streak").GetComponent<Image>();
 
         HPImg = GameObject.Find("HPBar").GetComponent<Image>();
@@ -104,6 +117,12 @@ public class GameManager : MonoBehaviour
         coinText.text = player.coin.ToString("d2");
         bombText = GameObject.Find("BombText").GetComponent<Text>();
         bombText.text = player.bomb.ToString("d2");
+        attackText = GameObject.Find("AttackText").GetComponent<Text>();
+        attackText.text = player.damage.ToString();
+        MSText = GameObject.Find("MSText").GetComponent<Text>();
+        MSText.text = player.speed.ToString();
+        LuckText = GameObject.Find("LuckText").GetComponent<Text>();
+        LuckText.text = player.luck.ToString();
 
         audioSource = GetComponent<AudioSource>();
 	}
@@ -128,6 +147,76 @@ public class GameManager : MonoBehaviour
         {
             ShowPropInfo();
         }
+        if(effectTime > 0)
+        {
+            GameObject.Find("Cover").GetComponent<Image>().fillAmount = effectTime / effectTimeRecord;
+            GameObject.Find("TimeText").GetComponent<Text>().text = ((int)effectTime + 1).ToString();
+            effectTime -= Time.deltaTime;
+            if(effectTime<=0)
+            {
+                effectImage.SetActive(false);
+            }
+        }
+        if(isGameEnd)
+        {
+            GameEnd();
+            if(Input.GetKey(KeyCode.Space))
+            {
+                Application.LoadLevel("1");
+                Time.timeScale = 1;
+            }
+            if(Input.GetKey(KeyCode.Escape))
+            {
+                Application.LoadLevel("0");
+                Time.timeScale = 1;
+            }
+        }
+        if(isPause)
+        {
+            Image pause = GameObject.Find("Pause").GetComponent<Image>();
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+            {
+                Time.timeScale = 1;
+                pauseEnd = 1000;
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                Image pauseArrow = GameObject.Find("PauseArrow").GetComponent<Image>();
+                float x = -30f;
+                float y = 85f;
+                pauseArrow.rectTransform.localPosition += new Vector3(x * pauseArrowIndex, y * pauseArrowIndex, 0);
+                pauseArrowIndex = -pauseArrowIndex;
+            }
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+            {
+                if (pauseArrowIndex < 0)
+                {
+                    Time.timeScale = 1;
+                    pauseEnd = 1000;
+                }
+                else
+                {
+                    Application.LoadLevel("0");
+                    Time.timeScale = 1;
+                    pauseEnd = 1000;
+
+                }
+            }
+            MoveImg(pause.rectTransform, pauseEnd);
+            if ((pauseEnd == 1000) && (Time.timeScale == 0))
+            {
+                Time.timeScale = 1;
+                isPause = false;
+                pauseEnd = 0;
+            }
+        }
+        else
+        {
+            if(Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+            {
+                isPause = true;
+            }
+        }
 	}
 
     public void ShowPropInfo()
@@ -146,6 +235,31 @@ public class GameManager : MonoBehaviour
             streak.rectTransform.localPosition = new Vector3(-1500, pos.y, pos.z);
             isShowPropInfo = false;
         }
+    }
+
+    public void GameEnd()
+    {
+        isGameEnd = true;
+        Image exit = GameObject.Find("Exit").GetComponent<Image>();
+        Image restart = GameObject.Find("Restart").GetComponent<Image>();
+        Image gameEnd = GameObject.Find("GameEnd").GetComponent<Image>();
+        MoveImg(exit.rectTransform, -290f);
+        MoveImg(restart.rectTransform, -290f);
+        MoveImg(gameEnd.rectTransform, 0f);
+    }
+
+    public void MoveImg(RectTransform start, float end)
+    {
+        if (Mathf.Abs(start.localPosition.y - end) > 10f)
+        {
+            float y = Mathf.Lerp(start.localPosition.y, end, Time.deltaTime * 15);
+            start.localPosition = new Vector3(start.localPosition.x, y, start.localPosition.z);
+        }
+        else
+        {
+            Time.timeScale = 0;
+        }
+        
     }
 
     public void ChangeBGM(bool isBoss)
@@ -319,6 +433,8 @@ public class GameManager : MonoBehaviour
     {
         player.Attacked(new Vector3(0, 0, 0), 0);
         player.immuneTime = val;
+        effectTime = 10f;
+        effectTimeRecord = 10f;
     }
 
     //更新玩家各项属性数值
@@ -335,6 +451,7 @@ public class GameManager : MonoBehaviour
                 {
                     HPText.text = "0/" + player.HPMax;
                     HPImg.fillAmount = 0;
+                    GameEnd();
                 }
                 else
                 {
@@ -352,6 +469,7 @@ public class GameManager : MonoBehaviour
                 {
                     HPText.text = "0/0";
                     HPImg.fillAmount = 0;
+                    GameEnd();
                 }
                 else
                 {

@@ -91,11 +91,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 1.5
   tearSpeed: 0
-  HP: 50
+  HP: 40
   collideDamage: 10
   bloodtear: {fileID: 101614, guid: 7e711d2322e2df44897bada4a718bf42, type: 2}
   isBoss: 0
-  thankTime: 0
+  thinkTime: 0
   walkTime: 0
   state: 
   target: {x: 0, y: 0, z: 0}
@@ -147,6 +147,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_Offset.y
       value: .200000003
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: HP
+      value: 40
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
